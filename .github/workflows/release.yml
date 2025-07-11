@@ -51,7 +51,7 @@ jobs:
 
       - name: Package VSCode extension
         working-directory: ./anex-ic10/anex-ic10-language-support
-        run: npx vsce package
+        run: npx vsce package -o ic10-language-support-${{ runner.os }}.vsix
 
       - name: Upload VSIX artifact
         uses: actions/upload-artifact@v4
