@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.1](https://github.com/Anexgohan/Stationeers-ic10/compare/v1.0.0...v1.0.1) (2025-07-12)
+
+### Features
+
+* **build:** Automated release process with GitHub Actions.
+* **docs:** Updated `instructions-for-compile.md` with relative paths.
+* **docs:** Added "Special Thanks" section to `README.md`.
+
 ## [1.0.0](https://github.com/Anexgohan/Stationeers-ic10/compare/v0.4.0...v1.0.0) (2025-07-12)
 
 ### Features

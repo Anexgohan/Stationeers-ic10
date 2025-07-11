@@ -31,3 +31,10 @@ If you find any issues or have suggestions for improvements, please [open an iss
 ## License
 
 This extension is released under the [MIT License](https://opensource.org/licenses/MIT). See the [LICENSE](https://github.com/Anexgohan/Stationeers-ic10/blob/master/LICENSE) file for more information.
+
+## Special Thanks
+
+This project is a fork and modification of the great work done by the following individuals:
+
+- **[Xandaros](https://github.com/Xandaros)** for the original `ic10lsp` language server: [https://github.com/Xandaros/ic10lsp](https://github.com/Xandaros/ic10lsp)
+- **[awilliamson](https://github.com/awilliamson)** for the original `ic10-language-support` VSCode extension: [https://github.com/awilliamson/ic10-language-support](https://github.com/awilliamson/ic10-language-support)

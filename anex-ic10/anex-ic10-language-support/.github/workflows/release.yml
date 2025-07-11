@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     branches:
-      - master  # Replace with your default branch name, if different
+      - main
 
 jobs:
   release:
@@ -12,15 +12,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-        with:
-          path: main
 
-      - name: Checkout ic10lsp
-        uses: actions/checkout@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
         with:
-          repository: Anexgohan/Stationeers-ic10
-          path: ic10lsp
-          
+          node-version: 18.x
+
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
@@ -28,32 +25,25 @@ jobs:
             override: true
 
       - name: Build ic10lsp
+        working-directory: ./anex-ic10/ic10lsp
+        run: cargo build --release
+
+      - name: Copy ic10lsp binary
         run: |
-          cd ic10lsp/ic10lsp
-          cargo build --release
-          cd ../..
-          
-      - name: Copy ic10lsp binaries
-        run: |
-          mkdir -p main/bin
-          cp ic10lsp/ic10lsp/target/release/ic10lsp main/bin/ic10lsp
-          
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: 18.x
+          mkdir -p ./anex-ic10/anex-ic10-language-support/bin
+          cp ./anex-ic10/ic10lsp/target/release/ic10lsp ./anex-ic10/anex-ic10-language-support/bin/ic10lsp
 
       - name: Install Dependencies
-        working-directory: main
+        working-directory: ./anex-ic10/anex-ic10-language-support
         run: npm ci
 
       - name: Package VSCode extension
-        working-directory: main
+        working-directory: ./anex-ic10/anex-ic10-language-support
         run: npx vsce package
 
       - name: Get version from package.json
         id: package-version
-        working-directory: main
+        working-directory: ./anex-ic10/anex-ic10-language-support
         run: |
           VERSION=$(jq -r .version package.json)
           echo "::set-output name=version::$VERSION"
@@ -61,12 +51,12 @@ jobs:
       - name: Create GitHub release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ steps.package-version.outputs.version }}
+          tag_name: v${{ steps.package-version.outputs.version }}
           files: |
-            main/*.vsix
+            ./anex-ic10/anex-ic10-language-support/*.vsix
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish to VS Marketplace
-        working-directory: main
+        working-directory: ./anex-ic10/anex-ic10-language-support
         run: npx vsce publish -p ${{ secrets.VSCE_PAT }}
