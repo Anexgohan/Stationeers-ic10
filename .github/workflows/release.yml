@@ -75,7 +75,7 @@ jobs:
         run: |
           # The package.json is not available here, so we extract from one of the artifacts
           # Unzip one of the vsix files to get the package.json
-          unzip vsix-artifacts/vsix-ubuntu-latest/*.vsix 'extension/package.json' -d temp-unzip
+          unzip vsix-artifacts/vsix-Linux/*.vsix 'extension/package.json' -d temp-unzip
           VERSION=$(jq -r .version temp-unzip/extension/package.json)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
@@ -84,8 +84,8 @@ jobs:
         with:
           tag_name: v${{ steps.package-version.outputs.version }}
           files: |
-            vsix-artifacts/vsix-ubuntu-latest/*.vsix
-            vsix-artifacts/vsix-windows-latest/*.vsix
-            vsix-artifacts/vsix-macos-latest/*.vsix
+            vsix-artifacts/vsix-Linux/*.vsix
+            vsix-artifacts/vsix-Windows/*.vsix
+            vsix-artifacts/vsix-macOS/*.vsix
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
