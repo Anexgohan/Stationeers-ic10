@@ -1,0 +1,140 @@
+{
+    "name": "ic10-language-support",
+    "authors": [
+        {
+            "name": "Anex"
+        }
+    ],
+    "icon": "images/icon.png",
+    "displayName": "Anex's IC10 Language Support",
+    "description": "IC10 MIPS-like Language Support for Stationeers - Featuring completions, hover information, signature help, goto definition, diagnostics, and more.",
+    "publisher": "Anex",
+    "version": "1.0.0",
+    "engines": {
+        "vscode": "^1.101.2"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "main": "./out/main.js",
+    "contributes": {
+        "languages": [
+            {
+                "id": "ic10",
+                "aliases": [
+                    "IC10",
+                    "ic10"
+                ],
+                "extensions": [
+                    ".ic10"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "ic10",
+                "scopeName": "source.ic10",
+                "path": "./syntaxes/ic10.tmLanguage.json"
+            }
+        ],
+        "commands": [
+            {
+                "command": "ic10.lsp.restart",
+                "title": "IC10: Restart Server",
+                "description": "Restart IC10 Language Server"
+            },
+            {
+                "command": "ic10.lsp.version",
+                "title": "IC10: Show Version",
+                "description": "IC10 Language Server Version"
+            }
+        ],
+        "configuration": {
+            "title": "IC10 Language Support",
+            "properties": {
+                "ic10.useRemoteLanguageServer": {
+                    "type": "boolean",
+                    "default": false,
+                    "title": "Use Remote Language Server",
+                    "description": "Whether to connect to a remote language server or run the language server locally"
+                },
+                "ic10.remoteLanguageServerHost": {
+                    "type": "string",
+                    "default": "localhost",
+                    "title": "Remote Language Server Host",
+                    "description": "The host name for the remote language server"
+                },
+                "ic10.remoteLanguageServerPort": {
+                    "type": "number",
+                    "default": 9257,
+                    "title": "Remote Language Server Port",
+                    "description": "The port number for the remote language server"
+                },
+                "ic10.lsp.max_lines": {
+                    "type": "number",
+                    "default": 128,
+                    "title": "Maximum Number of Lines",
+                    "description": "The maximum number of lines permitted by ic10. Errors will be generated for code above this limit."
+                },
+                "ic10.lsp.max_columns": {
+                    "type": "number",
+                    "default": 90,
+                    "title": "Maximum Columns per Line",
+                    "description": "The maximum number of columns permitted by ic10. Errors will be generated for code above this limit."
+                },
+                "ic10.lsp.warnings.overline_comment": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "Show Overline Comment Warning",
+                    "description": "Whether to show a warning when a comment is over the line limit (ic10.max_lines)"
+                },
+                "ic10.lsp.warnings.overcolumn_comment": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "Show Overcolumn Comment Warning",
+                    "description": "Whether to show a warning when a comment is over the column limit (ic10.max_columns)"
+                },
+                "ic10.lsp.max_bytes": {
+                    "type": "number",
+                    "default": 4096,
+                    "title": "Maximum Byte Size",
+                    "description": "The maximum byte size of the script. An error will be generated for code above this limit."
+                }
+            }
+        }
+    },
+    "activationEvents": [
+        "onLanguage:ic10"
+    ],
+    "scripts": {
+        "vscode:prepublish": "npm run esbuild-base -- --minify",
+        "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
+        "esbuild": "npm run esbuild-base -- --sourcemap",
+        "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
+        "test-compile": "tsc -p ./",
+        "release": "standard-version"
+    },
+    "devDependencies": {
+        "@types/glob": "^8.1.0",
+        "@types/mocha": "^10.0.1",
+        "@types/node": "16.x",
+        "@types/vscode": "^1.74.0",
+        "@typescript-eslint/eslint-plugin": "^5.56.0",
+        "@typescript-eslint/parser": "^5.56.0",
+        "@vscode/test-electron": "^2.3.0",
+        "esbuild": "^0.17.14",
+        "eslint": "^8.36.0",
+        "glob": "^8.1.0",
+        "mocha": "^10.2.0",
+        "standard-version": "^9.5.0",
+        "typescript": "^4.9.5"
+    },
+    "dependencies": {
+        "vscode-languageclient": "^8.0.1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Anexgohan/Stationeers-ic10"
+    }
+}

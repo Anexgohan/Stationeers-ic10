@@ -1,0 +1,137 @@
+{
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "name": "ic10",
+    "scopeName": "source.ic10",
+    "fileTypes": ["ic10"],
+    "patterns": [
+      {
+        "include": "#instruction"
+      },
+      {
+        "include": "#label"
+      },
+      {
+        "include": "#comment"
+      },
+      {
+        "include": "#whitespace"
+      },
+      {
+        "include": "#newline"
+      }
+    ],
+    "repository": {
+      "instruction": {
+        "patterns": [
+          {
+            "name": "keyword.control.ic10",
+            "match": "\\b(l|s|ls|lr|sb|lb|alias|move|add|sub|sdse|sdns|slt|sgt|sle|sge|seq|sne|sap|sna|and|or|xor|nor|mul|div|mod|j|bltz|bgez|blez|bgtz|bdse|bdns|beq|bne|bap|bna|jal|brdse|brdns|bltzal|bgezal|blezal|bgtzal|beqal|bneal|jr|bdseal|bdnsal|brltz|brgez|brlez|brgtz|breq|brne|brap|brna|sqrt|round|trunc|ceil|floor|max|min|abs|log|exp|rand|yield|label|peek|push|pop|hcf|select|blt|bgt|ble|bge|brlt|brgt|brle|brge|bltal|bgtal|bleal|bgeal|bapal|bnaal|beqz|bnez|bapz|bnaz|breqz|brnez|brapz|brnaz|beqzal|bnezal|bapzal|bnazal|sltz|sgtz|slez|sgez|seqz|snez|sapz|snaz|define|sleep|sin|asin|tan|atan|cos|acos|atan)\\b"
+          },
+          {
+            "begin": "\\s+",
+            "end": "(?=$|\\s|[#\\r\\n])",
+            "patterns": [
+              {
+                "include": "#whitespace"
+              },
+              {
+                "include": "#operand"
+              }
+            ]
+          }
+        ]
+      },
+      "label": {
+        "patterns": [
+          {
+            "name": "entity.name.label.ic10",
+            "match": "\\b[a-zA-Z_.][a-zA-Z0-9_.]*:"
+          }
+        ]
+      },
+      "comment": {
+        "patterns": [
+          {
+            "name": "comment.line.number-sign.ic10",
+            "match": "#.*"
+          }
+        ]
+      },
+      "operand": {
+        "patterns": [
+          {
+            "include": "#register"
+          },
+          {
+            "include": "#device"
+          },
+          {
+            "include": "#number"
+          },
+          {
+            "include": "#logictype"
+          },
+          {
+            "name": "variable.other.ic10",
+            "match": "\\b[a-zA-Z_.][a-zA-Z0-9_.]*\\b"
+          }
+        ]
+      },
+      "register": {
+        "patterns": [
+          {
+            "name": "variable.parameter.register.ic10",
+            "match": "\\b(ra|sp|r[0-9]|r1[0-5])\\b"
+          }
+        ]
+      },
+      "device": {
+        "patterns": [
+          {
+            "name": "constant.other.device.ic10",
+            "match": "\\b(d[b0-5]|d[r0-9]|d[r1][0-5])\\b"
+          }
+        ]
+      },
+      "number": {
+        "patterns": [
+          {
+            "name": "constant.numeric.ic10",
+            "match": "\\b-?[0-9]+(\\.[0-9]+)?\\b"
+          }
+        ]
+      },
+      "logictype": {
+        "patterns": [
+          {
+            "name": "support.type.ic10",
+            "match": "\\b(Power|Open|Mode|Error|Lock|Pressure|Temperature|PressureExternal|PressureInternal|Activate|Charge|Setting|Reagents|RatioOxygen|RatioCarbonDioxide|RatioNitrogen|RatioPollutant|RatioVolatiles|RatioWater|Horizontal|Vertical|SolarAngle|Maximum|Ratio|PowerPotential|PowerActual|Quantity|On|ImportQuantity|ImportSlotOccupant|ExportQuantity|ExportSlotOccupant|RequiredPower|HorizontalRatio|VerticalRatio|PowerRequired|Idle|Color|ElevatorSpeed|ElevatorLevel|RecipeHash|ExportSlotHash|ImportSlotHash|PlantHealth1|PlantHealth2|PlantHealth3|PlantHealth4|PlantGrowth1|PlantGrowth2|PlantGrowth3|PlantGrowth4|PlantEfficiency1|PlantEfficiency2|PlantEfficiency3|PlantEfficiency4|PlantHash1|PlantHash2|PlantHash3|PlantHash4|RequestHash|CompletionRatio|ClearMemory|ExportCount|ImportCount|PowerGeneration|TotalMoles|Volume|Plant|Harvest|Output|PressureSetting|TemperatureSetting|TemperatureExternal|Filtration|AirRelease|PositionX|PositionY|PositionZ|VelocityMagnitude|VelocityRelativeX|VelocityRelativeY|VelocityRelativeZ|RatioNitrousOxide|PrefabHash|ForceWrite|SignalStrength|SignalID|TargetX|TargetY|TargetZ|SettingInput|SettingOutput|CurrentResearchPodType|ManualResearchRequiredPod|MineablesInVicinity|MineablesInQueue|NextWeatherEventTime|Combustion|Fuel|ReturnFuelCost|CollectableGoods|Time|Bpm|EnvironmentEfficiency|WorkingGasEfficiency|PressureInput|TemperatureInput|RatioOxygenInput|RatioCarbonDioxideInput|RatioNitrogenInput|RatioPollutantInput|RatioVolatilesInput|RatioWaterInput|RatioNitrousOxideInput|TotalMolesInput|PressureInput2|TemperatureInput2|RatioOxygenInput2|RatioCarbonDioxideInput2|RatioNitrogenInput2|RatioPollutantInput2|RatioVolatilesInput2|RatioWaterInput2|RatioNitrousOxideInput2|TotalMolesInput2|PressureOutput|TemperatureOutput|RatioOxygenOutput|RatioCarbonDioxideOutput|RatioNitrogenOutput|RatioPollutantOutput|RatioVolatilesOutput|RatioWaterOutput|RatioNitrousOxideOutput|TotalMolesOutput|PressureOutput2|TemperatureOutput2|RatioOxygenOutput2|RatioCarbonDioxideOutput2|RatioNitrogenOutput2|RatioPollutantOutput2|RatioVolatilesOutput2|RatioWaterOutput2|RatioNitrousOxideOutput2|TotalMolesOutput2|CombustionInput|CombustionInput2|CombustionOutput|CombustionOutput2|OperationalTemperatureEfficiency|TemperatureDifferentialEfficiency|PressureEfficiency|CombustionLimiter|Throttle|Rpm|Stress|InterrogationProgress|TargetPadIndex|SizeX|SizeY|SizeZ|MinimumWattsToContact|WattsReachingContact|Occupied|OccupantHash|Quantity|Damage|Efficiency|Health|Growth|Pressure|Temperature|Charge|ChargeRatio|Class|PressureWaste|PressureAir|MaxQuantity|Mature|PrefabHash|Seeding)\\b"
+          }
+        ]
+      },
+      "whitespace": {
+        "patterns": [
+          {
+            "name": "meta.whitespace.ic10",
+            "match": "\\s+"
+          }
+        ]
+      },
+      "newline": {
+        "patterns": [
+          {
+            "name": "constant.character.escape.ic10",
+            "match": "\\\\r\\\\n"
+          },
+          {
+            "name": "constant.character.escape.ic10",
+            "match": "\\\\r"
+          },
+          {
+            "name": "constant.character.escape.ic10",
+            "match": "\\\\n"
+          }
+        ]
+        }
+    }
+}
