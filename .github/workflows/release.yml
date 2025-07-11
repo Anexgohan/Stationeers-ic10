@@ -6,10 +6,13 @@ on:
       - main
 
 jobs:
-  release:
-    runs-on: ubuntu-latest
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     permissions:
-      contents: write
+      contents: read
 
     steps:
       - name: Checkout repository
@@ -30,10 +33,17 @@ jobs:
         working-directory: ./anex-ic10/ic10lsp
         run: cargo build --release
 
-      - name: Copy ic10lsp binary
+      - name: Prepare binaries for packaging (Linux/macOS)
+        if: runner.os != 'Windows'
         run: |
           mkdir -p ./anex-ic10/anex-ic10-language-support/bin
           cp ./anex-ic10/ic10lsp/target/release/ic10lsp ./anex-ic10/anex-ic10-language-support/bin/ic10lsp
+
+      - name: Prepare binaries for packaging (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          mkdir -p ./anex-ic10/anex-ic10-language-support/bin
+          cp ./anex-ic10/ic10lsp/target/release/ic10lsp.exe ./anex-ic10/anex-ic10-language-support/bin/ic10lsp.exe
 
       - name: Install Dependencies
         working-directory: ./anex-ic10/anex-ic10-language-support
@@ -43,11 +53,30 @@ jobs:
         working-directory: ./anex-ic10/anex-ic10-language-support
         run: npx vsce package
 
+      - name: Upload VSIX artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: vsix-${{ runner.os }}
+          path: ./anex-ic10/anex-ic10-language-support/*.vsix
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download all VSIX artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: vsix-artifacts
+
       - name: Get version from package.json
         id: package-version
-        working-directory: ./anex-ic10/anex-ic10-language-support
         run: |
-          VERSION=$(jq -r .version package.json)
+          # The package.json is not available here, so we extract from one of the artifacts
+          # Unzip one of the vsix files to get the package.json
+          unzip vsix-artifacts/vsix-ubuntu-latest/*.vsix package.json -d temp-unzip
+          VERSION=$(jq -r .version temp-unzip/package.json)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Create GitHub release
@@ -55,10 +84,8 @@ jobs:
         with:
           tag_name: v${{ steps.package-version.outputs.version }}
           files: |
-            ./anex-ic10/anex-ic10-language-support/*.vsix
+            vsix-artifacts/vsix-ubuntu-latest/*.vsix
+            vsix-artifacts/vsix-windows-latest/*.vsix
+            vsix-artifacts/vsix-macos-latest/*.vsix
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # - name: Publish to VS Marketplace
-      #   working-directory: ./anex-ic10/anex-ic10-language-support
-      #   run: npx vsce publish -p ${{ secrets.VSCE_PAT }}
