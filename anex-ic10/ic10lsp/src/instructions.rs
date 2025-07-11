@@ -160,9 +160,19 @@ pub(crate) const INSTRUCTIONS: phf::Map<&'static str, InstructionSignature> = ph
     "sll" => InstructionSignature(&[REGISTER, VALUE, VALUE]),
     "sra" => InstructionSignature(&[REGISTER, VALUE, VALUE]),
     "srl" => InstructionSignature(&[REGISTER, VALUE, VALUE]),
+    "ss" => InstructionSignature(&[DEVICE, VALUE, SLOT_LOGIC_TYPE, REGISTER]),
+    "get" => InstructionSignature(&[REGISTER, DEVICE, VALUE]),
+    "getd" => InstructionSignature(&[REGISTER, VALUE, VALUE]),
+    "put" => InstructionSignature(&[DEVICE, VALUE, VALUE]),
+    "putd" => InstructionSignature(&[VALUE, VALUE, VALUE]),
+    "clrd" => InstructionSignature(&[VALUE]),
+    "clr" => InstructionSignature(&[DEVICE]),
+    "poke" => InstructionSignature(&[VALUE, VALUE]),
+    "ld" => InstructionSignature(&[REGISTER, VALUE, LOGIC_TYPE]),
+    "sd" => InstructionSignature(&[VALUE, LOGIC_TYPE, VALUE]),
+    "rmap" => InstructionSignature(&[REGISTER, DEVICE, VALUE]),
     "snan" => InstructionSignature(&[REGISTER, VALUE]),
     "snanz" => InstructionSignature(&[REGISTER, VALUE]),
-    "ss" => InstructionSignature(&[DEVICE, VALUE, SLOT_LOGIC_TYPE, REGISTER]),
 };
 
 pub(crate) const LOGIC_TYPES: phf::Set<&'static str> = phf_set! {
@@ -601,6 +611,20 @@ pub(crate) const INSTRUCTION_DOCS: phf::Map<&'static str, &'static str> = phf_ma
     "acos" => "Returns the angle (radians) whos cosine is the specified value",
     "atan" => "Returns the angle (radians) whos tan is the specified value",
     "atan2" => "Returns the angle (radians) whose tangent is the quotient of two specified values: a (y) and b (x)",
+    "get" => "Using the provided device, attempts to read the stack value at the provided address, and places it in the register.",
+    "getd" => "Seeks directly for the provided device id, attempts to read the stack value at the provided address, and places it in the register.",
+    "put" => "Using the provided device, attempts to write the provided value to the stack at the provided address.",
+    "putd" => "Seeks directly for the provided device id, attempts to write the provided value to the stack at the provided address.",
+    "clrd" => "Seeks directly for the provided device id and clears the stack memory of that device",
+    "clr" => "Clears the stack memory for the provided device.",
+    "poke" => "Stores the provided value at the provided address in the stack.",
+    "ld" => "Loads device LogicType to register by direct ID reference.",
+    "sd" => "Stores register value to LogicType on device by direct ID reference.",
+    "ss" => "Stores register value to device stored in a slot LogicSlotType on device.",
+    "rmap" => "Given a reagent hash, store the corresponding prefab hash that the device expects to fulfill the reagent requirement. For example, on an autolathe, the hash for Iron will store the hash for ItemIronIngot.",
+    "sbs" => "Stores register value to LogicSlotType on all output network devices with provided type hash in the provided slot.",
+    "snan" => "Register = 1 if a is NaN, otherwise 0",
+    "snanz" => "Register = 0 if a is NaN, otherwise 1",
 };
 
 pub(crate) const LOGIC_TYPE_DOCS: phf::Map<&'static str, &'static str> = phf_map! {
