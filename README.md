@@ -28,7 +28,7 @@ This Visual Studio Code extension provides syntax highlighting, IntelliSense, an
 4. Select the latest version of the extension and press `Enter`.
 5. Once the extension is installed, you can start using it by opening `.ic10` files.
 
-![how-to-install-in-vscode](how-to-install-in-vscode-1.png)
+![how-to-install-in-vscode](how-to-install-in-vscode.png)
 
 ## Usage
 
