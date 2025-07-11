@@ -16,10 +16,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: 18.x
 
@@ -54,7 +54,7 @@ jobs:
         run: npx vsce package
 
       - name: Upload VSIX artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: vsix-${{ runner.os }}
           path: ./anex-ic10/anex-ic10-language-support/*.vsix
@@ -66,7 +66,7 @@ jobs:
       contents: write
     steps:
       - name: Download all VSIX artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: vsix-artifacts
 
@@ -75,8 +75,8 @@ jobs:
         run: |
           # The package.json is not available here, so we extract from one of the artifacts
           # Unzip one of the vsix files to get the package.json
-          unzip vsix-artifacts/vsix-ubuntu-latest/*.vsix package.json -d temp-unzip
-          VERSION=$(jq -r .version temp-unzip/package.json)
+          unzip vsix-artifacts/vsix-ubuntu-latest/*.vsix 'extension/package.json' -d temp-unzip
+          VERSION=$(jq -r .version temp-unzip/extension/package.json)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Create GitHub release
