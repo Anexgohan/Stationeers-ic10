@@ -1696,20 +1696,36 @@ impl Backend {
         // Byte size check
         {
             let mut byte_count = 0;
+            let mut start_pos: Option<LspPosition> = None;
+            let mut current_line = 0;
+            let mut current_col = 0;
+
             for char in document.content.chars() {
+                let char_len = if char == '\n' { 2 } else { 1 };
+
+                if byte_count <= config.max_bytes && byte_count + char_len > config.max_bytes {
+                    if start_pos.is_none() {
+                        start_pos = Some(LspPosition::new(current_line, current_col));
+                    }
+                }
+                byte_count += char_len;
+
                 if char == '\n' {
-                    byte_count += 2;
+                    current_line += 1;
+                    current_col = 0;
                 } else {
-                    byte_count += 1;
+                    current_col += 1;
                 }
             }
 
             if byte_count > config.max_bytes {
-                let last_line = document.content.lines().count().saturating_sub(1) as u32;
+                let end_line = document.content.lines().count().saturating_sub(1) as u32;
+                let end_col = document.content.lines().last().map_or(0, |l| l.len()) as u32;
+
                 diagnostics.push(Diagnostic {
                     range: LspRange::new(
-                        LspPosition::new(last_line, 0),
-                        LspPosition::new(last_line, 0),
+                        start_pos.unwrap_or_else(|| LspPosition::new(end_line, 0)),
+                        LspPosition::new(end_line, end_col),
                     ),
                     severity: Some(DiagnosticSeverity::ERROR),
                     message: format!(
@@ -1753,18 +1769,18 @@ impl Backend {
                 let Some(last_operand) = capture.children_by_field_name("operand", &mut tree_cursor).into_iter().last() else {
                     continue;
                 };
-                let last_operand = last_operand.child(0).unwrap();
-
-                if last_operand.kind() == "number" {
-                    diagnostics.push(Diagnostic::new(
-                        Range::from(capture.range()).into(),
-                        Some(DiagnosticSeverity::WARNING),
-                        Some(NumberOrString::String(LINT_ABSOLUTE_JUMP.to_string())),
-                        None,
-                        "Absolute jump to line number".to_string(),
-                        None,
-                        None,
-                    ));
+                if let Some(last_operand) = last_operand.child(0) {
+                    if last_operand.kind() == "number" {
+                        diagnostics.push(Diagnostic::new(
+                            Range::from(capture.range()).into(),
+                            Some(DiagnosticSeverity::WARNING),
+                            Some(NumberOrString::String(LINT_ABSOLUTE_JUMP.to_string())),
+                            None,
+                            "Absolute jump to line number".to_string(),
+                            None,
+                            None,
+                        ));
+                    }
                 }
             }
         }
