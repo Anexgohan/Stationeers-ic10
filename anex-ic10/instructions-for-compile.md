@@ -84,7 +84,7 @@ The VSCode extension needs the latest compiled linter binary to function correct
 
 1.  After the build completes, copy the new binary into the extension's `bin` directory. The following command should be run from the `anex-ic10/ic10lsp` directory you are currently in:
     ```bash
-    copy target\release\ic10lsp.exe ..\anex-anex-ic10-language-support\bin\ic10lsp.exe /Y
+    copy target\release\ic10lsp.exe ..\anex-ic10-language-support\bin\ic10lsp.exe /Y
     ```
     *(Note: For other operating systems, you would copy the `ic10lsp` file instead of `ic10lsp.exe`)*
 
@@ -95,7 +95,7 @@ After updating the binary or making changes to the extension's TypeScript code (
 
 1.  Navigate to the extension's directory:
     ```bash
-    cd anex-ic10/anex-anex-ic10-language-support
+    cd anex-ic10/anex-ic10-language-support
     ```
 
 2.  If you haven't already, or if you've changed dependencies in `package.json`, install the npm packages:

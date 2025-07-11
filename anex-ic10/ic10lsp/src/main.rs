@@ -425,6 +425,7 @@ impl LanguageServer for Backend {
             tree_sitter_ic10::language(),
             "(comment) @comment
              (instruction (operation)@keyword)
+             (instruction (invalid_instruction)@invalid_keyword)
              (logictype)@string
              (device)@preproc
              (register)@macro
@@ -438,6 +439,7 @@ impl LanguageServer for Backend {
 
         let comment_idx = query.capture_index_for_name("comment").unwrap();
         let keyword_idx = query.capture_index_for_name("keyword").unwrap();
+        let invalid_keyword_idx = query.capture_index_for_name("invalid_keyword").unwrap();
         let string_idx = query.capture_index_for_name("string").unwrap();
         let preproc_idx = query.capture_index_for_name("preproc").unwrap();
         let macro_idx = query.capture_index_for_name("macro").unwrap();
@@ -461,6 +463,13 @@ impl LanguageServer for Backend {
                     SemanticTokenType::COMMENT
                 } else if idx == keyword_idx {
                     SemanticTokenType::KEYWORD
+                } else if idx == invalid_keyword_idx {
+                    let instruction_text = node.utf8_text(document.content.as_bytes()).unwrap();
+                    if instructions::INSTRUCTIONS.contains_key(instruction_text) {
+                        SemanticTokenType::KEYWORD
+                    } else {
+                        continue;
+                    }
                 } else if idx == string_idx {
                     SemanticTokenType::STRING
                 } else if idx == preproc_idx {
@@ -869,7 +878,7 @@ impl LanguageServer for Backend {
             return Ok(None);
         };
 
-        let Some(operation_node) = instruction_node.child_by_field_name("operation") else {
+        let Some(operation_node) = instruction_node.child_by_field_name("operation").or_else(|| instruction_node.query("(invalid_instruction)@x", document.content.as_bytes())) else {
             return Ok(None);
         };
 
@@ -1106,25 +1115,24 @@ impl LanguageServer for Backend {
                     }));
                 }
             }
-            "operation" => {
-                let Some(signature) =  instructions::INSTRUCTIONS.get(name) else {
-                    return Ok(None);
-                };
-                let mut content = name.to_string();
-                for parameter in signature.0 {
-                    content.push_str(&format!(" {parameter}"));
+            "operation" | "invalid_instruction" => {
+                if let Some(signature) = instructions::INSTRUCTIONS.get(name) {
+                    let mut content = name.to_string();
+                    for parameter in signature.0 {
+                        content.push_str(&format!(" {parameter}"));
+                    }
+                    return Ok(Some(Hover {
+                        contents: HoverContents::Array({
+                            let mut v = Vec::new();
+                            v.push(MarkedString::String(content));
+                            if let Some(doc) = instructions::INSTRUCTION_DOCS.get(name) {
+                                v.push(MarkedString::String(doc.to_string()));
+                            }
+                            v
+                        }),
+                        range: Some(Range::from(node.range()).into()),
+                    }));
                 }
-                return Ok(Some(Hover {
-                    contents: HoverContents::Array({
-                        let mut v = Vec::new();
-                        v.push(MarkedString::String(content));
-                        if let Some(doc) = instructions::INSTRUCTION_DOCS.get(name) {
-                            v.push(MarkedString::String(doc.to_string()));
-                        }
-                        v
-                    }),
-                    range: Some(Range::from(node.range()).into()),
-                }));
             }
             "logictype" => {
                 let Some(instruction_node) = node.find_parent("instruction") else {
@@ -1393,19 +1401,17 @@ impl Backend {
                     .utf8_text(document.content.as_bytes())
                     .unwrap();
                 let Some(signature) = instructions::INSTRUCTIONS.get(operation) else {
-                                if operation != "define" && operation != "alias" && operation != "label" {
-                                    diagnostics.push(Diagnostic::new(
-                                            Range::from(operation_node.range()).into(),
-                                            Some(DiagnosticSeverity::INFORMATION),
-                                            None,
-                                            None,
-                                            format!("Unsupported instruction"),
-                                            None,
-                                            None,
-                                            ));
-                                }
-                                continue;
-                            };
+                    diagnostics.push(Diagnostic::new(
+                        Range::from(operation_node.range()).into(),
+                        Some(DiagnosticSeverity::ERROR),
+                        None,
+                        None,
+                        format!("Invalid instruction"),
+                        None,
+                        None,
+                    ));
+                    continue;
+                };
 
                 let mut argument_count = 0;
                 let mut tree_cursor = capture.walk();
@@ -1586,15 +1592,19 @@ impl Backend {
             .unwrap();
             let captures = cursor.captures(&query, tree.root_node(), document.content.as_bytes());
             for (capture, _) in captures {
-                diagnostics.push(Diagnostic::new(
-                    Range::from(capture.captures[0].node.range()).into(),
-                    Some(DiagnosticSeverity::ERROR),
-                    None,
-                    None,
-                    "Invalid instruction".to_string(),
-                    None,
-                    None,
-                ));
+                let node = capture.captures[0].node;
+                let instruction_text = node.utf8_text(document.content.as_bytes()).unwrap();
+                if !instructions::INSTRUCTIONS.contains_key(instruction_text) {
+                    diagnostics.push(Diagnostic::new(
+                        Range::from(node.range()).into(),
+                        Some(DiagnosticSeverity::ERROR),
+                        None,
+                        None,
+                        "Invalid instruction".to_string(),
+                        None,
+                        None,
+                    ));
+                }
             }
         }
 
