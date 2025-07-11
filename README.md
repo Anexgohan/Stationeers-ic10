@@ -24,8 +24,11 @@ This Visual Studio Code extension provides syntax highlighting, IntelliSense, an
 
 1. Open Visual Studio Code.
 2. Press `Ctrl+P` to open the Quick Open dialog.
-3. Type `ext install ic10-language-support` and press `Enter`.
-4. Once the extension is installed, you can start using it by opening `.ic10` files.
+3. Type `ext install vsix`
+4. Select the latest version of the extension and press `Enter`.
+5. Once the extension is installed, you can start using it by opening `.ic10` files.
+
+![how-to-install-in-vscode](how-to-install-in-vscode-1.png)
 
 ## Usage
 
