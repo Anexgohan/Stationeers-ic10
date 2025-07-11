@@ -1,5 +1,14 @@
 # IC10 Language Support for Stationeers
 
+## Downloads
+
+Download the latest VS Code IC10 Extension:
+- **[Windows](https://github.com/Anexgohan/Stationeers-ic10/releases/latest/download/ic10-language-support-Windows.vsix)**
+- **[Linux](https://github.com/Anexgohan/Stationeers-ic10/releases/latest/download/ic10-language-support-Linux.vsix)**
+- **[macOS](https://github.com/Anexgohan/Stationeers-ic10/releases/latest/download/ic10-language-support-macOS.vsix)**
+
+---
+
 This Visual Studio Code extension provides syntax highlighting, IntelliSense, and other language support features for the IC10 MIPS-like language used in the game Stationeers. Uses the Language Server [ic10lsp](https://github.com/Anexgohan/Stationeers-ic10/tree/main/ic10lsp)
 
 ## Features
