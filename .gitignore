@@ -3,6 +3,7 @@ task_readme.md
 
 # claude files
 CLAUDE.md
+.claude/
 
 # Local publishing instructions
 readme_publish-to-github.md
