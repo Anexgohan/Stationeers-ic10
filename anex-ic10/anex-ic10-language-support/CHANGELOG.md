@@ -2,6 +2,45 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.1] - 2025-07-25
+
+### 📄 Documentation
+- **Added README.md to extension package** - Fixes "No README available" issue in VS Code
+- Enhanced extension documentation with comprehensive feature descriptions
+- Added usage examples and configuration guide
+
+## [1.1.0] - 2025-07-25
+
+### ✨ New Features
+- **HASH() Function Support**: Inline hints and tooltips for device hash calculations
+- **100+ Device Mappings**: Complete database of Stationeers devices with hash values
+- **Smart Typo Handling**: Fuzzy matching for device names (e.g., "StructurePipeAnalysizer" works)
+- **Enhanced Code Completion**: Intelligent suggestions for all IC10 instructions
+- **4096-Byte Limit Validation**: Real-time warnings when approaching Stationeers' code size limits
+- **Hover Tooltips**: Show friendly device names when hovering over hash values
+- **Go-to-Definition**: Jump to label and variable definitions
+- **Comprehensive Diagnostics**: Advanced syntax error detection and validation
+
+### 🔧 Improvements
+- **Language Server Performance**: Significantly improved response times and stability
+- **Instruction Database**: Updated with latest Stationeers instruction set
+- **Error Messages**: More descriptive and helpful diagnostic messages
+- **Code Validation**: Line length and column limit checking
+- **Configuration Options**: Customizable limits for lines, columns, and bytes
+
+### 🐛 Bug Fixes
+- Fixed syntax highlighting edge cases
+- Resolved memory leaks in language server
+- Corrected instruction parameter validation
+- Fixed completion provider conflicts
+- Improved error recovery in parser
+
+### 📁 Project Structure
+- Reorganized documentation into dedicated directory
+- Moved testing files to organized development structure
+- Updated build and packaging workflows
+- Enhanced README with comprehensive usage guide
+
 ## [1.0.1](https://github.com/Anexgohan/Stationeers-ic10/compare/v1.0.0...v1.0.1) (2025-07-12)
 
 ### Features
