@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.2] - 2025-01-25
+
+### 🐛 Critical Bug Fixes
+- **Fixed incorrect device hash values** - Corrected 4 device hashes that were causing wrong tooltips and hints
+  - `StructureBattery`: Fixed from 700133157 to -400115994 (Station Battery)
+  - `StructureBatteryLarge`: Fixed from -459827268 to -1388288459 (Station Battery Large)
+- **Added missing transformer devices** - Added 2 missing transformer variants to device registry
+  - `StructureTransformerSmall`: Added hash -890946730 (Transformer Small)
+  - `StructureTransformerMedium`: Added hash -1065725831 (Transformer Medium)
+- **Prevented Kit vs Structure hash confusion** - Systematic validation against authoritative stationpedia.txt
+- **Updated documentation** - Added hash validation process and correction history
+
+### 🔧 Improvements
+- **Hash Validation Process** - Established systematic verification against authoritative source data
+- **Documentation Updates** - Updated task_hash-tooltip.md and hashes_ids.md with correct values
+
 ## [1.1.1] - 2025-07-25
 
 ### 📄 Documentation
