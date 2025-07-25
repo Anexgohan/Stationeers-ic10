@@ -65,6 +65,9 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Download all VSIX artifacts
         uses: actions/download-artifact@v4
         with:
@@ -79,10 +82,47 @@ jobs:
           VERSION=$(jq -r .version temp-unzip/extension/package.json)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
+      - name: Extract changelog for current version
+        id: changelog
+        run: |
+          # Extract content between the first version header and the next version header
+          # This gets the latest version's changelog content
+          CHANGELOG_PATH="anex-ic10/anex-ic10-language-support/CHANGELOG.md"
+          
+          # Get content between first ## [version] and next ## [version]
+          changelog_content=$(sed -n '/^## \[/,/^## \[/p' "$CHANGELOG_PATH" | head -n -1 | tail -n +2)
+          
+          # If the content is empty, fall back to commit message
+          if [ -z "$changelog_content" ]; then
+            changelog_content="Release v${{ steps.package-version.outputs.version }}"
+          fi
+          
+          # Save to output (handle multiline content properly)
+          echo "content<<EOF" >> $GITHUB_OUTPUT
+          echo "$changelog_content" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
       - name: Create GitHub release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v${{ steps.package-version.outputs.version }}
+          name: IC10 Language Support v${{ steps.package-version.outputs.version }}
+          body: |
+            # 🔧 IC10 Language Support v${{ steps.package-version.outputs.version }}
+            
+            ${{ steps.changelog.outputs.content }}
+            
+            ## 📦 Installation
+            
+            The extension will auto-update through VS Code, or install manually:
+            1. Open VS Code
+            2. Go to Extensions (Ctrl+Shift+X)  
+            3. Search for "Anex's IC10 Language Support"
+            4. Click Update/Install
+            
+            ---
+            
+            **Full Changelog**: https://github.com/Anexgohan/Stationeers-ic10/compare/v${{ steps.package-version.outputs.previous-version }}...v${{ steps.package-version.outputs.version }}
           files: |
             vsix-artifacts/vsix-Linux/*.vsix
             vsix-artifacts/vsix-Windows/*.vsix
