@@ -1,0 +1,14 @@
+# Test file for HASH() function tooltip support
+
+# Test 1: Basic HASH() function calls
+define Pump1 HASH("Volume Pump")
+define Pump2 HASH('Daylight Sensor')
+define Pump3 HASH("Gas Sensor")
+
+# Test 2: Mixed literal and HASH() calls
+define ManualPump -321403609
+define AutoPump HASH("Volume Pump")
+
+# Test 3: Direct usage in instructions
+move r0 HASH("Volume Pump")
+s l r0 HASH("Daylight Sensor") 1

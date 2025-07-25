@@ -1,0 +1,7 @@
+# Test file for hover functionality
+move r0 10
+add r1 r0 5
+l r2 d0 Temperature
+s d0 Setting 100
+define my_device 12345
+alias my_register r5

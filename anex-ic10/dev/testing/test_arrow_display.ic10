@@ -1,0 +1,24 @@
+# Test file for arrow symbol display in inlay hints
+# Expected results: " → Device Name" after each hash
+
+# Direct hash values should show arrow + device name
+define Pump -321403609
+define Sensor -1252983604
+define AutoLathe 336213101
+define LED -1949054743
+
+# HASH() function calls should also show arrow + device name  
+define Pump2 HASH("StructureVolumePump")
+define Sensor2 HASH("StructureGasSensor")
+define AutoLathe2 HASH("StructureAutolathe")
+define LED2 HASH("StructureConsoleLED1x3")
+
+# Test with display names
+define Pump3 HASH("Volume Pump")
+define Sensor3 HASH("Gas Sensor")
+
+# Complex device name with parentheses
+define LED3 HASH("LED Display (Large)")
+
+# Test typo handling
+define Analyzer HASH("StructurePipeAnalysizer")

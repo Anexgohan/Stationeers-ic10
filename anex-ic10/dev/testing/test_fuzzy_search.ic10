@@ -1,0 +1,54 @@
+# Test file for fuzzy search functionality in HASH() completion
+# Type HASH(" followed by these search terms to test fuzzy matching:
+
+# Test Cases - these should now show relevant devices:
+
+# Typing "Battery" should show:
+# - StructureBatteryLarge → Battery Cell (Large)
+# - StructureBatteryCharger → Battery Cell Charger
+define Test1 HASH("Battery")
+
+# Typing "Pump" should show:
+# - StructureVolumePump → Volume Pump  
+# - StructureTurboVolumePump → Turbo Volume Pump (Gas)
+# - StructureLiquidVolumePump → Liquid Volume Pump
+define Test2 HASH("Pump")
+
+# Typing "LED" should show:
+# - StructureConsoleLED1x3 → LED Display (Large)
+# - StructureConsoleLED1x2 → LED Display (Medium)  
+# - StructureConsoleLED5 → LED Display (Small)
+define Test3 HASH("LED")
+
+# Typing "Sensor" should show:
+# - StructureDaylightSensor → Daylight Sensor
+# - StructureGasSensor → Gas Sensor
+# - StructureMotionSensor → Motion Sensor
+define Test4 HASH("Sensor")
+
+# Typing "Logic" should show:
+# - StructureLogicProcessor → Logic Processor
+# - StructureLogicReader → Logic Reader
+# - StructureLogicWriter → Logic Writer
+# - StructureLogicMemory → Logic Memory
+define Test5 HASH("Logic")
+
+# Typing "Solar" should show:
+# - StructureSolarPanel → Solar Panel
+# - StructureSolarPanelHeavy → Solar Panel (Heavy Dual)
+define Test6 HASH("Solar")
+
+# Typing "Display" should show:
+# - StructureConsoleLED1x3 → LED Display (Large)
+# - StructureGraphDisplay → Graph Display
+# - StructureGasDisplay → Gas Display
+# - StructureHashDisplay → Hash Display
+# - StructureCameraDisplay → Camera Display
+define Test7 HASH("Display")
+
+# Case insensitive test:
+define Test8 HASH("furnace")  # Should show Furnace, Arc Furnace, Advanced Furnace
+
+# Partial word matching:
+define Test9 HASH("Tank")     # Should show various tank devices
+define Test10 HASH("Auto")    # Should show Autolathe

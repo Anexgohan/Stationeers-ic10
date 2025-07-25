@@ -1,0 +1,25 @@
+# Test file for battery device completion and tooltips
+# These should now all show up in HASH() completion:
+
+# Small battery (was missing before)
+define SmallBattery HASH("StructureBattery")              # → Battery Cell (Small) (700133157)
+
+# Large battery (was already working)
+define LargeBattery HASH("StructureBatteryLarge")         # → Battery Cell (Large) (-459827268)
+
+# Nuclear battery (newly added)
+define NuclearBattery HASH("StructureBatteryNuclear")     # → Battery Cell (Nuclear) (544617306)
+
+# Battery charger (was already working)
+define Charger HASH("StructureBatteryCharger")            # → Battery Cell Charger (1945930022)
+
+# Test fuzzy search with "Battery" - should show all battery types:
+define FuzzyTest1 HASH("Battery")                         # Should show all 4 battery types
+
+# Test with display names:
+define SmallByName HASH("Battery Cell (Small)")          # → Battery Cell (Small) (700133157)
+define NuclearByName HASH("Battery Cell (Nuclear)")      # → Battery Cell (Nuclear) (544617306)
+
+# Test direct hash values should show inline hints with arrows:
+define SmallDirect 700133157                              # → Battery Cell (Small)
+define NuclearDirect 544617306                            # → Battery Cell (Nuclear)

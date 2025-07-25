@@ -13,12 +13,21 @@ This Visual Studio Code extension provides syntax highlighting, IntelliSense, an
 
 ## Features
 
-- Syntax highlighting for IC10 language files (`.ic10`)
-- Code autocompletion
-- Hover information
-- Signature help
-- Go to definition
-- Diagnostics
+- **Syntax highlighting** for IC10 language files (`.ic10`)
+- **Code autocompletion** with intelligent suggestions for all IC10 instructions
+- **Hover information** with detailed device descriptions and instruction help
+- **Signature help** for function parameters and instruction usage
+- **Go to definition** for labels and variables
+- **Diagnostics** with comprehensive syntax error detection and code length limits
+- **🆕 HASH() Function Support** - Advanced device hash calculations with inline hints
+  - `define Pump HASH("StructureVolumePump")` → Shows "Volume Pump" inline hint
+  - `define Sensor -1252983604` → Shows "Gas Sensor" inline hint  
+  - **100+ devices supported** including all common IC10 automation devices
+  - **Smart typo handling** (e.g., "StructurePipeAnalysizer" works correctly)
+  - **Hover tooltips** show device names for hash values in your code
+- **🆕 Enhanced Language Server** with improved performance and stability
+- **🆕 Code length validation** - Warns when approaching Stationeers' 4096-byte limit
+- **🆕 Comprehensive instruction database** with latest Stationeers updates
 
 ## Installation
 
@@ -28,13 +37,36 @@ This Visual Studio Code extension provides syntax highlighting, IntelliSense, an
 4. Select the latest version of the extension and press `Enter`.
 5. Once the extension is installed, you can start using it by opening `.ic10` files.
 
-![how-to-install-in-vscode](how-to-install-in-vscode.png)
+![how-to-install-in-vscode](images/how-to-install-in-vscode.png)
+![how-to-install-in-vscode](how-to-install-in-vscode.gif)
 
 ## Usage
 
 After installing the extension, you can use it by opening any `.ic10` file in Visual Studio Code. The extension will automatically activate and provide syntax highlighting and language features for your IC10 MIPS-like code.
 
-![Example showing autocompletions for ic10 and hover text](./images/example_working.png)
+### Key Features in Action:
+- ### **Smart Completions**: Type instruction names to see all available options with documentation
+  ![fuzzy search](images/fuzzy-search.gif)
+- ### **Inline Hints**: inline hints for device hashes in your code
+  ![inline hints](images/inline-hints.png)
+- ### **HASH() Tooltips**: Hover over device hashes to see friendly device names
+  ![tooltips](images/tooltips.png)
+- ### **Error Detection**: Real-time syntax checking and 4096-byte limit warnings
+  Error-Detection-line-length
+  ![Error-Detection-line-length](images/Error-Detection-line-length.png)
+  Error-Detection-4098-size-128-line-size
+  ![Error-Detection-4098-size-128-line-limit](images/Error-Detection-4098-size-128-line-size.png)
+
+- ### **Quick Smart Suggestions**: Smart suggestions for all IC10 instructions
+  ![suggestions for ic10 and hover text](/images/smart_suggestions.png)
+
+### Configuration
+
+The extension supports several VS Code settings:
+- `ic10.lsp.max_lines`: Maximum lines allowed (default: 128)
+- `ic10.lsp.max_columns`: Maximum columns per line (default: 90)  
+- `ic10.lsp.max_bytes`: Maximum total bytes (default: 4096)
+- `ic10.useRemoteLanguageServer`: Use remote LSP server for development
 
 ## Contributing
 

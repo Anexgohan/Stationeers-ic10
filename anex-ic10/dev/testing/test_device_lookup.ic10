@@ -1,0 +1,6 @@
+define Test1 HASH("StructureVolumePump")
+define Test2 HASH("StructureDaylightSensor")
+define Test3 HASH("Volume Pump")
+define Test4 HASH("Daylight Sensor")
+define Test5 -321403609
+define Test6 1076425094

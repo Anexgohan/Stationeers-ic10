@@ -1,5 +1,16 @@
-# Local task file
+# Local task files
 task_readme.md
+
+# claude files
+CLAUDE.md
 
 # Local publishing instructions
 readme_publish-to-github.md
+
+# Development executables (platform-specific binaries)
+anex-ic10/dev/executables/
+
+# Documentation directory (except specific files)
+documentation/
+!documentation/hashes_ids.md
+!documentation/anex_stationeers_Instructions_Functions.md

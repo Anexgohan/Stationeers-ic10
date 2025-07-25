@@ -1,0 +1,15 @@
+# Final verification test for HASH() suffix display
+
+# Direct numeric hash (should show "Volume Pump")
+define VolPump -321403609
+
+# HASH() function call (should now also show "Volume Pump")
+define VolPump2 HASH("StructureVolumePump")
+
+# Another HASH() function call (should show "Volume Pump")
+define VolPump3 HASH("Volume Pump")
+
+# Test usage
+l r0 VolPump   # Hover over VolPump should show "Volume Pump"
+l r1 VolPump2  # Hover over VolPump2 should show "Volume Pump"  
+l r2 VolPump3  # Hover over VolPump3 should show "Volume Pump"

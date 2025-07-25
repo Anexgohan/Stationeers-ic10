@@ -1,0 +1,7 @@
+# Test file to compare hover behavior
+define VolPump -321403609       # This should show "Volume Pump" as suffix
+define VolPump2 HASH("StructureVolumePump")  # This should show device name but doesn't
+
+# Test usage
+l r0 VolPump
+l r1 VolPump2

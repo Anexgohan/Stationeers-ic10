@@ -33,6 +33,18 @@ To add or modify features, you'll need to edit specific files within the project
         -   Implement new features like code actions (quick fixes) in the `code_action` function.
         -   Handle new configuration options sent from the VSCode client.
 
+-   **File:** `src/device_hashes.rs`
+    -   **Purpose:** Device name to hash mappings for HASH() function tooltips and inline hints.
+    -   **Edit this file to:**
+        -   Add new device mappings to the `DEVICE_NAME_TO_HASH` map.
+        -   Update display names in the `HASH_TO_DISPLAY_NAME` reverse mapping.
+
+-   **File:** `src/hash_utils.rs`
+    -   **Purpose:** Utility functions for HASH() argument extraction and CRC32 computation.
+    -   **Edit this file to:**
+        -   Modify HASH() parsing logic.
+        -   Update device name lookup functions.
+
 ### VSCode Extension (in `anex-ic10/anex-ic10-language-support/`)
 
 -   **File:** `package.json`

@@ -1,0 +1,37 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__ide__executeCode",
+      "Bash(python3:*)",
+      "Bash(python:*)",
+      "Bash(cargo test)",
+      "Bash(grep:*)",
+      "Bash(cargo test:*)",
+      "Bash(cargo run:*)",
+      "Bash(rg:*)",
+      "Bash(findstr:*)",
+      "Bash(cargo build:*)",
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(cp:*)",
+      "Bash(./ic10lsp.exe:*)",
+      "Bash(rustc:*)",
+      "Bash(.test_crc32_debug.exe)",
+      "Bash(rm:*)",
+      "Bash(copy targetreleaseic10lsp.exe ..anex-ic10-language-supportbinic10lsp.exe)",
+      "Bash(npx vsce:*)",
+      "Bash(.parse_stationpedia.exe)",
+      "Bash(./parse_stationpedia.exe)",
+      "Bash(./generate_comprehensive_mappings.exe)",
+      "Bash(mkdir:*)",
+      "Bash(mv:*)",
+      "Bash(cargo check:*)",
+      "Bash(npm test)",
+      "Bash(npm run:*)",
+      "Bash(copy:*)",
+      "Bash(npm install:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": []
+  }
+}

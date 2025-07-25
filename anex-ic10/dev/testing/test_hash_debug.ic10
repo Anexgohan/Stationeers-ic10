@@ -1,0 +1,8 @@
+# Debug test to check HASH values
+define VolPump -321403609           # Volume Pump (should show suffix)
+define VolPump2 HASH("Volume Pump") # Volume Pump (should show suffix)  
+define VolPump3 HASH("StructureVolumePump") # Unknown device (no suffix expected)
+
+# Test known devices
+define Test1 HASH("StructureActivePump") # Should show Volume Pump
+define Test2 HASH("Daylight Sensor") # Should show device name

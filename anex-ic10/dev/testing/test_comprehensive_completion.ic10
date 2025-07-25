@@ -1,0 +1,19 @@
+# Test file for comprehensive HASH() device completion
+# Type HASH(" and check autocomplete - should show 100+ devices
+
+# Test completion with various prefixes:
+define Test1 HASH("Struct")  # Should show all Structure* devices
+define Test2 HASH("Volume")  # Should show Volume Pump options
+define Test3 HASH("Gas")     # Should show Gas Sensor, Gas Mixer, etc.
+define Test4 HASH("LED")     # Should show LED Display options
+define Test5 HASH("Auto")    # Should show Autolathe
+define Test6 HASH("Hydro")   # Should show Hydroponics devices
+
+# Test exact matches that should show in tooltip:
+define Pump HASH("StructureVolumePump")         # → Volume Pump (-321403609)
+define Sensor HASH("StructureGasSensor")        # → Gas Sensor (-1252983604) 
+define Autolathe HASH("StructureAutolathe")     # → Autolathe (336213101)
+define LED HASH("StructureConsoleLED1x3")       # → LED Display (Large) (-1949054743)
+
+# Test typo handling:
+define Analyzer HASH("StructurePipeAnalysizer") # → Pipe Analyzer (435685051)

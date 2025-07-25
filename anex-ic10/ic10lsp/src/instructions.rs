@@ -547,6 +547,8 @@ pub(crate) const INSTRUCTION_DOCS: phf::Map<&'static str, &'static str> = phf_ma
     "bnez" => "Branch to line b if a != 0",
     "bapz" => "Branch to line c if abs(a) &lt;= float.epsilon * 8",
     "bnaz" => "Branch to line c if abs(a) &gt; float.epsilon * 8",
+    "bnan" => "Branch to line b if a is NaN",
+    "brnan" => "Relative branch to line b if a is NaN",
     "jr" => "Relative jump to line a",
     "brdse" => "Relative jump to line a if device is set",
     "brdns" => "Relative jump to line a if device is not set",

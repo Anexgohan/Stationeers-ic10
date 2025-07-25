@@ -1,0 +1,4 @@
+# Simple debug test
+define Test1 123
+define Test2 HASH("StructureVolumePump")
+define Test3 -321403609

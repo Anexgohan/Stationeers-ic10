@@ -35,6 +35,11 @@ use tree_sitter::{Node, Parser, Query, QueryCursor, Tree};
 
 mod cli;
 mod instructions;
+mod device_hashes;
+mod hash_utils;
+mod debug_crc32;
+// mod test_hash_lookup; // Moved to dev/testing
+mod debug_tree_structure;
 
 const LINT_ABSOLUTE_JUMP: &'static str = "L001";
 
@@ -360,6 +365,7 @@ impl LanguageServer for Backend {
         let mut cursor = QueryCursor::new();
         let query = Query::new(tree_sitter_ic10::language(), "(number)@x").unwrap();
 
+        // Process all number nodes (includes both direct hashes and HASH() calls)
         for (capture, _) in cursor.captures(&query, tree.root_node(), document.content.as_bytes()) {
             let node = capture.captures[0].node;
 
@@ -371,6 +377,8 @@ impl LanguageServer for Backend {
             }
 
             let text = node.utf8_text(document.content.as_bytes()).unwrap();
+            
+            // Try direct hash lookup first
             if let Some(item_name) = instructions::HASH_NAME_LOOKUP.get(text) {
                 let Some(line_node) = node.find_parent("line") else {
                     continue;
@@ -390,7 +398,7 @@ impl LanguageServer for Backend {
 
                 ret.push(InlayHint {
                     position: endpos.into(),
-                    label: InlayHintLabel::String(item_name.to_string()),
+                    label: InlayHintLabel::String(format!(" → {}", item_name)),
                     kind: Some(InlayHintKind::TYPE),
                     text_edits: None,
                     tooltip: None,
@@ -399,7 +407,41 @@ impl LanguageServer for Backend {
                     data: None,
                 });
             }
+            // Try HASH() function call processing
+            else if let Some(device_name) = crate::hash_utils::extract_hash_argument(text) {
+                if let Some(hash_val) = crate::hash_utils::get_device_hash(&device_name) {
+                    if let Some(display_name) = crate::hash_utils::get_device_name_for_hash(hash_val) {
+                        let Some(line_node) = node.find_parent("line") else {
+                            continue;
+                        };
+
+                        let endpos = if let Some(newline) =
+                            line_node.query("(newline)@x", document.content.as_bytes())
+                        {
+                            Position::from(newline.range().start_point)
+                        } else if let Some(instruction) =
+                            line_node.query("(instruction)@x", document.content.as_bytes())
+                        {
+                            Position::from(instruction.range().end_point)
+                        } else {
+                            Position::from(node.range().end_point)
+                        };
+
+                        ret.push(InlayHint {
+                            position: endpos.into(),
+                            label: InlayHintLabel::String(format!(" → {}", display_name)),
+                            kind: Some(InlayHintKind::TYPE),
+                            text_edits: None,
+                            tooltip: None,
+                            padding_left: None,
+                            padding_right: None,
+                            data: None,
+                        });
+                    }
+                }
+            }
         }
+
 
         Ok(Some(ret))
     }
@@ -770,10 +812,23 @@ impl LanguageServer for Backend {
 
                     let start_entries = ret.len();
 
-                    for hash_name in &instructions::HASH_NAMES {
-                        if hash_name.starts_with(string_text) {
+                    // Use comprehensive device registry with fuzzy search
+                    for hash_name in crate::device_hashes::DEVICE_NAME_TO_HASH.keys() {
+                        // Fuzzy search: match if search text appears anywhere in device name or display name
+                        let search_lower = string_text.to_lowercase();
+                        let hash_value = crate::device_hashes::DEVICE_NAME_TO_HASH[hash_name];
+                        let display_name = crate::device_hashes::HASH_TO_DISPLAY_NAME
+                            .get(&hash_value)
+                            .unwrap_or(hash_name);
+                        
+                        let matches = hash_name.to_lowercase().contains(&search_lower) ||
+                                     display_name.to_lowercase().contains(&search_lower);
+                        
+                        if matches {
+                            
                             ret.push(CompletionItem {
                                 label: hash_name.to_string(),
+                                detail: Some(format!("→ {} ({})", display_name, hash_value)),
                                 text_edit: Some(CompletionTextEdit::Edit(TextEdit {
                                     range: {
                                         let mut edit_range =
@@ -1084,15 +1139,65 @@ impl LanguageServer for Backend {
         match node.kind() {
             "identifier" => {
                 if let Some(definition_data) = type_data.defines.get(name) {
-                    return Ok(Some(Hover {
-                        contents: HoverContents::Array(vec![MarkedString::LanguageString(
-                            LanguageString {
-                                language: "ic10".to_string(),
-                                value: format!("define {} {}", name, definition_data.value),
-                            },
-                        )]),
-                        range: Some(Range::from(node.range()).into()),
-                    }));
+                    // Check if this is a HASH() function call
+                    if let Some(parent) = node.parent() {
+                        if parent.kind() == "function_call" {
+                            let parent_text = parent.utf8_text(document.content.as_bytes()).unwrap();
+                            if let Some(device_name) = crate::hash_utils::extract_hash_argument(parent_text) {
+                                if let Some(device_hash) = crate::hash_utils::get_device_hash(&device_name) {
+                                    if let Some(device_display_name) = crate::hash_utils::get_device_name_for_hash(device_hash) {
+                                        return Ok(Some(Hover {
+                                            contents: HoverContents::Scalar(MarkedString::String(
+                                                device_display_name.to_string()
+                                            )),
+                                            range: Some(Range::from(parent.range()).into()),
+                                        }));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Handle defines - check for both numeric hashes and HASH() calls
+                    let mut device_display_name = None;
+                    
+                    // Try parsing as direct numeric hash first
+                    if let Ok(hash_val) = definition_data.value.parse::<i32>() {
+                        device_display_name = crate::hash_utils::get_device_name_for_hash(hash_val);
+                    } 
+                    // Then try parsing as HASH() function call
+                    else {
+                        let extracted = crate::hash_utils::extract_hash_argument(&definition_data.value);
+                        if let Some(device_name) = extracted {
+                            let device_hash = crate::hash_utils::get_device_hash(&device_name);
+                            if let Some(hash_val) = device_hash {
+                                device_display_name = crate::hash_utils::get_device_name_for_hash(hash_val);
+                            }
+                        }
+                    }
+                    
+                    if let Some(device_name) = device_display_name {
+                        return Ok(Some(Hover {
+                            contents: HoverContents::Array(vec![
+                                MarkedString::LanguageString(LanguageString {
+                                    language: "ic10".to_string(),
+                                    value: format!("define {} {}", name, definition_data.value),
+                                }),
+                                MarkedString::String(device_name.to_string()),
+                            ]),
+                            range: Some(Range::from(node.range()).into()),
+                        }));
+                    } else {
+                        return Ok(Some(Hover {
+                            contents: HoverContents::Array(vec![MarkedString::LanguageString(
+                                LanguageString {
+                                    language: "ic10".to_string(),
+                                    value: format!("define {} {}", name, definition_data.value),
+                                },
+                            )]),
+                            range: Some(Range::from(node.range()).into()),
+                        }));
+                    }
                 }
                 if let Some(definition_data) = type_data.aliases.get(name) {
                     return Ok(Some(Hover {
@@ -1182,6 +1287,21 @@ impl LanguageServer for Backend {
                     contents: HoverContents::Array(strings),
                     range: Some(Range::from(node.range()).into()),
                 }));
+            }
+            "function_call" => {
+                let text = node.utf8_text(document.content.as_bytes()).unwrap();
+                if let Some(device_name) = crate::hash_utils::extract_hash_argument(text) {
+                    if let Some(device_hash) = crate::hash_utils::get_device_hash(&device_name) {
+                        if let Some(device_display_name) = crate::hash_utils::get_device_name_for_hash(device_hash) {
+                            return Ok(Some(Hover {
+                                contents: HoverContents::Scalar(MarkedString::String(
+                                    device_display_name.to_string()
+                                )),
+                                range: Some(Range::from(node.range()).into()),
+                            }));
+                        }
+                    }
+                }
             }
             _ => {}
         }
