@@ -9,10 +9,12 @@ CLAUDE.md
 readme_publish-to-github.md
 
 # Documentation directory (except specific files)
-documentation/
-documentation/tasks/
+# NOTE: Exceptions (!pattern) must come BEFORE the general ignore pattern
+# Git processes .gitignore rules top-to-bottom, so exceptions need to be defined first
 !documentation/hashes_ids.md
 !documentation/anex_stationeers_Instructions_Functions.md
+documentation/
+documentation/tasks/
 
 # Development executables (platform-specific binaries)
 anex-ic10/dev/executables/

@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.0] - 2025-07-26
+
+### ✨ New Features
+- **StationeersDataExtractor BepInEx Plugin** - Automated device hash extraction tool for game data
+- **Comprehensive Development Tools** - Added utility programs for hash mapping generation and stationpedia parsing
+- **Enhanced Hash Utilities** - Improved hash calculation and lookup functions in language server
+
+### 🔧 Improvements
+- **Build Configuration Updates** - Enhanced build process and configuration management
+- **Development Workflow** - Added comprehensive toolset for device data extraction and processing
+- **Documentation Structure** - Improved project organization and development file structure
+
+### 🐛 Bug Fixes
+- **Removed Obsolete Files** - Cleaned up outdated stationpedia.txt file
+- **Hash Utility Enhancements** - Fixed hash computation and device lookup functionality
+
 ## [1.1.2] - 2025-01-25
 
 ### 🐛 Critical Bug Fixes
