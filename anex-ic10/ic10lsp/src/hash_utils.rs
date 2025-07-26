@@ -1,5 +1,5 @@
 use crc32fast::Hasher;
-use crate::device_hashes::DEVICE_NAME_TO_HASH;
+use crate::instructions::{PREFAB_TO_HASH, HASH_TO_DISPLAY};
 
 /// Computes CRC32 hash for a given string using the same algorithm as Stationeers
 pub fn compute_crc32(input: &str) -> i32 {
@@ -49,13 +49,12 @@ pub fn is_hash_function_call(input: &str) -> bool {
 
 /// Looks up device name in device registry and returns the corresponding hash
 pub fn get_device_hash(device_name: &str) -> Option<i32> {
-    DEVICE_NAME_TO_HASH.get(device_name).copied()
+    PREFAB_TO_HASH.get(device_name).copied()
 }
 
 /// Gets device name for a given hash value from the registry
 pub fn get_device_name_for_hash(hash_value: i32) -> Option<&'static str> {
-    use crate::device_hashes::HASH_TO_DISPLAY_NAME;
-    HASH_TO_DISPLAY_NAME.get(&hash_value).copied()
+    HASH_TO_DISPLAY.get(&hash_value.to_string()).copied()
 }
 
 #[cfg(test)]

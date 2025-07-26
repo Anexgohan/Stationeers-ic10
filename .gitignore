@@ -8,10 +8,22 @@ CLAUDE.md
 # Local publishing instructions
 readme_publish-to-github.md
 
+# Documentation directory (except specific files)
+documentation/
+documentation/tasks/
+!documentation/hashes_ids.md
+!documentation/anex_stationeers_Instructions_Functions.md
+
 # Development executables (platform-specific binaries)
 anex-ic10/dev/executables/
 
-# Documentation directory (except specific files)
-documentation/
-!documentation/hashes_ids.md
-!documentation/anex_stationeers_Instructions_Functions.md
+# huge files
+anex-ic10/dev/dotNet/
+
+# git clone of other mods
+anex-ic10/dev/gamedata-mods/
+anex-ic10/dev/gamedata-mods/IC10-Extender
+anex-ic10/dev/gamedata-mods/xml-generator
+
+# Deprecated files
+anex-ic10/dev/extractor/StationeersDataExtractor-BepInEx

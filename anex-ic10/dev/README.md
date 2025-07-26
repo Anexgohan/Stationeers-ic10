@@ -9,14 +9,40 @@ dev/
 ├── executables/          # Platform-specific binaries (ignored by git)
 │   ├── *.exe            # Windows executables
 │   └── *.pdb            # Debug symbols
-└── testing/             # Test files and test modules
-    ├── *.ic10           # IC10 test scripts
-    └── *.rs             # Rust test modules
+├── src-utilities/        # Rust source files for utility programs
+│   ├── parse_stationpedia.rs
+│   └── generate_comprehensive_mappings.rs
+├── data/                 # Data files and resources
+│   └── stationpedia_correct_hashes.txt
+├── testing/             # Test files and test modules
+│   ├── *.ic10           # IC10 test scripts
+│   └── *.rs             # Rust test modules
+└── gamedata-mods/       # BepInEx mods for Stationeers integration
+    ├── IC10-Extender/   # IC10 language extensions
+    └── xml-generator/   # Game data extraction utilities
 ```
+
+## Data Processing Utilities
+
+### What These Utilities Do
+
+#### `parse_stationpedia.rs`
+- **Input**: `stationpedia.txt` (format: `hash_value device_name`)
+- **Output**: Rust PHF maps for device hash lookups
+- **Purpose**: Generates complete device mappings for the language server
+- **Usage**: Run after Stationeers game updates to refresh all device hashes
+
+#### `generate_comprehensive_mappings.rs`
+- **Input**: `stationpedia.txt`
+- **Output**: Curated Structure* name mappings with comments
+- **Purpose**: Maps user-friendly names to internal Structure* identifiers
+- **Usage**: Manual curation of ~60 common devices for better UX
+
+**Data Pipeline**: `stationpedia.txt` → utilities → `device_hashes.rs` → LSP server
 
 ## Building Development Tools
 
-The executables in the `executables/` directory are built from Rust source files located in the `documentation/` directory.
+The executables in the `executables/` directory are built from Rust source files located in the `src-utilities/` directory.
 
 ### Prerequisites
 
@@ -28,22 +54,22 @@ The executables in the `executables/` directory are built from Rust source files
 #### 1. Build parse_stationpedia.exe
 ```bash
 # From repository root
-cd documentation/
-rustc parse_stationpedia.rs -o ../anex-ic10/dev/executables/parse_stationpedia.exe
+cd anex-ic10/dev/src-utilities/
+rustc parse_stationpedia.rs -o ../executables/parse_stationpedia.exe
 ```
 
 #### 2. Build generate_comprehensive_mappings.exe
 ```bash
 # From repository root
-cd documentation/
-rustc generate_comprehensive_mappings.rs -o ../anex-ic10/dev/executables/generate_comprehensive_mappings.exe
+cd anex-ic10/dev/src-utilities/
+rustc generate_comprehensive_mappings.rs -o ../executables/generate_comprehensive_mappings.exe
 ```
 
 ### Alternative: Using Cargo
 If you prefer using Cargo, you can create a temporary `Cargo.toml` file:
 
 ```bash
-# From documentation/ directory
+# From src-utilities/ directory
 cargo init --name dev_tools
 # Move .rs files to src/
 # Build with: cargo build --release
