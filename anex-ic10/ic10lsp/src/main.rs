@@ -40,8 +40,10 @@ mod hash_utils;
 mod debug_crc32;
 // mod test_hash_lookup; // Moved to dev/testing
 mod debug_tree_structure;
+mod additional_features;
 
 const LINT_ABSOLUTE_JUMP: &'static str = "L001";
+const LINT_NUMBER_BATCH_MODE: &'static str = "L002";
 
 const SEMANTIC_SYMBOL_LEGEND: &'static [SemanticTokenType] = &[
     SemanticTokenType::KEYWORD,
@@ -1903,6 +1905,14 @@ impl Backend {
                     }
                 }
             }
+        }
+
+        // Register usage analysis
+        {
+            let mut register_analyzer = additional_features::RegisterAnalyzer::new();
+            register_analyzer.analyze_register_usage(tree, &document.content, &file_data.type_data.aliases);
+            let register_diagnostics = register_analyzer.generate_diagnostics();
+            diagnostics.extend(register_diagnostics);
         }
 
         self.client

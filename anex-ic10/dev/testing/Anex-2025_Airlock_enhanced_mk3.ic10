@@ -1,0 +1,117 @@
+# Automatic Airlock (1 Cube wide) with automatic open close.
+# Place Proximity Sensors above Interior and Exterior doors outside the airlock
+# (ProxSensorExt-PsVent-DoorInt--2xActVent)&(2xActVent--DoorExt-PsVent-ProxSensorInt)
+alias DoorInt d0 # Interior Door
+alias DoorExt d1 # Exterior Door
+define GasSensor HASH("StructureGasSensor")  # Gas Sensor inside airlock
+define LeverSwitch HASH("StructureLogicSwitch") # Lever Switch for manual override
+define pSensorAll HASH("StructureProximitySensor") # Sensors
+define pSensorInt HASH("Proximity Sensor Int")#[Naming:"Proximity Sensor Int"]
+define pSensorExt HASH("Proximity Sensor Ext")#[Naming:"Proximity Sensor Ext"]
+define ActiveVents HASH("StructureActiveVent") # Active Vents
+define ActiveVentInt HASH("Active Vent Int")#[Naming:"Active Vent Int"]
+define ActiveVentExt HASH("Active Vent Ext")#[Naming:"Active Vent Ext"]
+define StateIdle 0 # StateIdle
+define StateEntering 1 # StateEntering
+define StateCycling 2 # StateCycling
+define StateExiting 3 # StateExiting
+alias state r0
+alias targetPressure r1
+alias playerOrigin r2
+alias sensorState r3
+alias temp r4
+alias currentPressure r5
+Start:
+move targetPressure 100 # user-defined airlock pressure
+sb pSensorAll Setting 3
+s DoorInt Open 0
+s DoorExt Open 0
+s DoorInt Lock 1
+s DoorExt Lock 1
+sb ActiveVents On 0
+move state StateIdle
+yield
+Main:
+yield
+lb temp LeverSwitch Open 0
+bnez temp ManualMode
+# --- State Machine ---
+beq state StateIdle HandleIdle # State 0: Waiting for player
+beq state StateEntering HandleEntering # State 1: Player entering
+beq state StateCycling HandleCycling # State 2: Cycling pressure
+beq state StateExiting HandleExiting # State 3: Exiting
+j Main
+HandleIdle:
+yield
+lbn sensorState pSensorAll pSensorInt Activate 1
+lbn temp pSensorAll pSensorExt Activate 1
+add sensorState sensorState temp
+beqz sensorState Main
+lbn playerOrigin pSensorAll pSensorInt Activate 1
+select temp playerOrigin 0 1 # door selection
+s dr4 Open 1 # Indirectly open correct door
+move state StateEntering
+j Main
+HandleEntering:
+lbn sensorState pSensorAll pSensorInt Activate 1
+lbn temp pSensorAll pSensorExt Activate 1
+add sensorState sensorState temp
+beqz sensorState ResetAirlock
+beq sensorState 2 StartCycling # Player on both sensors, now inside
+j Main
+HandleCycling:
+l temp DoorInt Open
+l sensorState DoorExt Open
+or temp temp sensorState
+bnez temp Main # Wait for doors to close
+lb currentPressure GasSensor Pressure Average
+sub temp currentPressure targetPressure
+abs temp temp
+sle temp temp 10 # Allow <x> kPa tolerance, slow GasSensor reading compensation
+bnez temp StartExiting
+sgt temp currentPressure targetPressure
+beqz temp Main
+beq playerOrigin 1 VentToInterior
+sbn ActiveVents ActiveVentExt On 1
+sbn ActiveVents ActiveVentExt Mode 1
+j Main
+VentToInterior:
+sbn ActiveVents ActiveVentInt On 1
+sbn ActiveVents ActiveVentInt Mode 1
+j Main
+HandleExiting:
+sb ActiveVents On 0
+select temp playerOrigin 1 0 # Select other door
+s dr4 Open 1 # Indirectly open destination door
+lbn sensorState pSensorAll pSensorInt Activate 1
+lbn temp pSensorAll pSensorExt Activate 1
+add sensorState sensorState temp
+bnez sensorState Main # Wait for player to leave
+j ResetAirlock
+StartCycling:
+s DoorInt Open 0
+s DoorExt Open 0
+move state StateCycling
+j Main
+StartExiting:
+move state StateExiting
+j Main
+ResetAirlock:
+s DoorInt Open 0
+s DoorExt Open 0
+sb ActiveVents On 0
+move state StateIdle
+j Main
+ManualMode:
+yield
+s DoorInt Lock 0
+s DoorExt Lock 0
+sb ActiveVents On 0
+lb temp LeverSwitch Open 0
+bnez temp ManualMode
+s DoorInt Open 0 # Close & Lock doors on lever=0
+s DoorExt Open 0
+s DoorInt Lock 1
+s DoorExt Lock 1
+move state StateIdle
+j Main

@@ -1,0 +1,9 @@
+# Test lbn assignment detection
+define Furnace 545937711
+
+# Should detect r0 assignment then read - no warning expected
+lbn r0 Furnace HASH("Test") Temperature 1
+move r1 r0
+
+# Should detect r2 read before assign - warning expected  
+move r3 r2

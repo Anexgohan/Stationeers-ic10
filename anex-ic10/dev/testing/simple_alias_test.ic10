@@ -1,0 +1,10 @@
+alias temp r0
+alias pressure r1
+
+# Assignment - should track r0 assignment via temp
+move temp 100
+
+# Read - should track r0 read via temp
+move pressure temp
+
+# Both should be marked as "used" - no warnings expected

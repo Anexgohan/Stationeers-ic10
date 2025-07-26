@@ -1,0 +1,20 @@
+alias temperature r0    # Used correctly
+alias pressure r1       # Assigned but never read
+alias unused_reg r2     # Never used at all
+alias pump d0
+
+l temperature d0 Temperature
+move pressure 101.325   # This value is assigned but never used
+# pressure is never read anywhere
+
+bgt temperature 300 shutdown
+
+# Test read before assign
+move r3 r4  # r4 is read before being assigned
+
+# Test properly used register
+move r5 100
+add r6 r5 50  # r5 is read, r6 is assigned
+
+shutdown:
+j 0

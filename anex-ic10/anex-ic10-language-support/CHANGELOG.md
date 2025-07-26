@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.0] - 2025-07-26
+
+### ✨ New Features
+- **Register Usage Analysis** - Comprehensive static analysis for IC10 register optimization
+  - **Unused Register Detection** - Identifies registers that are declared but never used
+  - **Assigned-but-Never-Read Warnings** - Highlights registers that receive values but are never consumed
+  - **Read-Before-Assign Errors** - Catches potentially uninitialized register usage
+  - **Full Alias Support** - Tracks register usage through aliases (`alias temp r0`)
+  - **40+ Instruction Support** - Recognizes all assignment operations including batch loads (`lbn`, `lbs`, `lbns`)
+  - **JAL/RA Function Support** - Proper handling of function calls and return addresses
+  - **Smart Diagnostics** - Context-aware error messages with register names and aliases
+
+### 🔧 Improvements
+- **Language Server Architecture** - Added modular `additional_features.rs` for advanced analysis features
+- **AST Analysis Enhancement** - Improved tree-sitter parsing for comprehensive register tracking
+- **Diagnostic Integration** - Seamless integration with VS Code Problems panel
+- **Real-world Testing** - Validated with complex IC10 scripts (furnace control, airlock systems)
+
+### 🐛 Bug Fixes
+- **Batch Instruction Recognition** - Fixed `lbn`, `lbs`, `lbns` detection as assignment operations
+- **Alias Resolution Logic** - Enhanced mapping between aliases and register usage
+- **Line Ordering Analysis** - Improved read-before-assign detection accuracy
+- **Self-Reference Handling** - Proper support for operations like `mul r0 r0 2`
+
 ## [1.2.0] - 2025-07-26
 
 ### ✨ New Features

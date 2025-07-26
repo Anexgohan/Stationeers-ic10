@@ -1,0 +1,114 @@
+define Furnace 545937711 #Update 6.14
+define Pump -321403609
+define IC -128473777
+define Dial 554524804
+define Analyzer 435685051
+define led -1949054743
+define Light 1944485013
+define Lever 1220484876
+alias temp r7
+alias press r8
+alias maxtemp r2
+alias mintemp r1
+alias maxpress r4
+alias minpress r3
+start:
+move r1 0
+move r2 0
+move r3 0
+move r4 0
+lbn r15 435685051 HASH("Fuel PA") Pressure 2
+slt r15 r15 8000
+sbn 2104106366 HASH("Fuel Mixer") On r15
+lbn r14 Furnace HASH("A Furnace") On 1
+sbn Light HASH("SLight") On r14
+sbn Light HASH("SLight") Color 4
+lbn r12 Lever HASH("Flush") Open 1
+mul r12 r12 100
+sbn Furnace HASH("A Furnace") SettingOutput r12
+sbn Furnace HASH("A Furnace") SettingInput 0
+s db Setting -1
+sbn Pump HASH("CoolantPump") Setting 0
+sbn Pump HASH("FuelPump") Setting 0
+sbn Pump HASH("FuelPump") On 0
+sbn Pump HASH("CoolantPump") On 0
+sbn Furnace HASH("A Furnace") Open 0
+yield
+l r0 db Setting
+blez r0 start
+jal Get
+set:############################
+sbn 2104106366 HASH("Fuel Mixer") On 0
+sbn Light HASH("SLight") Color 2
+lbn temp Furnace HASH("A Furnace") Temperature 2
+brgt temp 600 2
+sbn Furnace HASH("A Furnace") Activate 1
+sbn Furnace HASH("A Furnace") SettingInput 100
+lbn r0 Analyzer HASH("Fuel PA") Volume 1
+select temp temp temp 300
+div r12 maxtemp temp
+mul r0 r0 minpress
+mul r0 r0 r12
+mul r0 r0 500
+lbn r15 Analyzer HASH("Fuel PA") Temperature 1
+lbn r14 Analyzer HASH("Fuel PA") TotalMoles 1
+mul r15 r15 r14
+mul r15 r15 8314.46
+div r0 r0 r15
+sbn Pump HASH("FuelPump") Setting r0
+lbn r15 Analyzer HASH("Coolant PA") Temperature 1
+lbn r0 Analyzer HASH("Coolant PA") Volume 1
+lbn temp Furnace HASH("A Furnace") Temperature 2
+div r12 temp maxtemp
+brgt r12 1 2
+move r12 1
+mul r13 r15 1000000  #8095.8
+mul r12 r12 r13
+mul r0 r0 r12
+lbn r14 Analyzer HASH("Coolant PA") TotalMoles 1
+mul r15 r15 r14
+mul r15 r15 8314.46
+div r0 r0 r15
+sbn Pump HASH("CoolantPump") Setting r0
+
+lbn press Furnace HASH("A Furnace") Pressure 2
+lbn temp Furnace HASH("A Furnace") Temperature 2
+brlt press 55000 2
+move press 55000
+slt r10 temp mintemp
+sgt r9 temp maxtemp
+slt r5 press minpress
+select r5 minpress r5 0
+sgt r6 press maxpress
+or r10 r10 r5
+mul r6 r6 30
+sbn Pump HASH("FuelPump") On r10
+sbn Pump HASH("CoolantPump") On r9
+sbn Furnace HASH("A Furnace") SettingOutput r6
+lbn r10 Dial HASH("Ingot Dial") Setting 2
+lbn r11 Furnace HASH("A Furnace") RecipeHash 2
+lbn r12 IC HASH("Hash IC") Setting 1
+lbn r13 Furnace HASH("A Furnace") Open 2
+brle r10 7 2
+beq r12 r11 end
+bgtz r13 end
+lbn r7 Dial HASH("Ingot Dial") Setting 2
+beqz r7 end
+j set #############################
+end:
+lbn r14 Furnace HASH("A Furnace") Reagents 2
+sbn Furnace HASH("A Furnace") Open 1
+yield
+brgtz r14 -3
+sbn Dial HASH("Ingot Dial") Setting 0
+sbn Furnace HASH("A Furnace") SettingOutput 0
+j start############################
+Get:
+move r5 0
+l r0 db Setting
+add r5 r5 1
+mul r0 r0 100000
+trunc rr5 r0
+mod r0 r0 rr5
+brle r5 3 -4
+j ra
