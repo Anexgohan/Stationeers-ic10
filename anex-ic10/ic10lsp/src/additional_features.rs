@@ -1,8 +1,8 @@
 use std::collections::HashMap;
-use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
+use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity, CodeActionOrCommand, CodeAction, CodeActionKind, Command};
 use tree_sitter::{Query, QueryCursor, Tree};
 
-use crate::Range;
+use crate::{Range, NodeEx};
 
 #[derive(Debug, Clone)]
 pub struct OperationRecord {
@@ -420,4 +420,14 @@ impl RegisterAnalyzer {
         
         None
     }
+}
+
+/// Code Actions for enhanced interactivity with instructions
+pub fn get_instruction_code_actions(
+    _node: &tree_sitter::Node,
+    _content: &str,
+) -> Option<Vec<CodeActionOrCommand>> {
+    // Code Actions for instruction exploration have been removed per user request
+    // The lightbulb hint remains in hover tooltips to guide users to other Code Actions
+    None
 }

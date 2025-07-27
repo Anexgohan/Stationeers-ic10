@@ -1,0 +1,86 @@
+# IC10 Language Server - Development Requirements
+
+This file lists the required development dependencies and their official download sources.
+
+## .NET Framework Requirements
+
+The following .NET components are required for building and developing the IC10 Language Server extension:
+
+### 1. .NET Framework 4.8 Developer Pack
+- **File**: `dotNet/NDP48-DevPack-ENU.exe`
+- **Official Download**: https://dotnet.microsoft.com/en-us/download/dotnet-framework/net48
+- **Description**: .NET Framework 4.8 Developer Pack for Windows development
+- **Size**: ~77 MB
+- **Required for**: Building .NET Framework components and compatibility
+
+### 2. .NET Framework 4.8.1 Developer Pack  
+- **File**: `dotNet/NDP481-DevPack-ENU.exe`
+- **Official Download**: https://dotnet.microsoft.com/en-us/download/dotnet-framework/net481
+- **Description**: .NET Framework 4.8.1 Developer Pack (latest framework version)
+- **Size**: ~77 MB
+- **Required for**: Latest .NET Framework development and compatibility
+
+### 3. .NET 9.0 SDK
+- **File**: `dotNet/dotnet-sdk-9.0.303-win-x64.exe`
+- **Official Download**: https://dotnet.microsoft.com/en-us/download/dotnet/9.0
+- **Description**: .NET 9.0 SDK for Windows x64
+- **Size**: ~220 MB
+- **Required for**: Modern .NET development, cross-platform applications
+
+## Other Development Requirements
+
+### Rust Toolchain
+- **Official Download**: https://rustup.rs/
+- **Description**: Rust programming language and Cargo package manager
+- **Required for**: Building the IC10 Language Server (`anex-ic10/ic10lsp/`)
+
+### Node.js
+- **Official Download**: https://nodejs.org/en/download/
+- **Recommended Version**: Latest LTS (Long Term Support)
+- **Description**: JavaScript runtime and npm package manager
+- **Required for**: Building the VS Code extension (`anex-ic10/anex-ic10-language-support/`)
+
+### Visual Studio Code
+- **Official Download**: https://code.visualstudio.com/download
+- **Description**: Code editor for development and testing
+- **Required for**: Extension development and testing
+
+## Installation Order
+
+1. Install .NET Framework 4.8 Developer Pack
+2. Install .NET Framework 4.8.1 Developer Pack
+3. Install .NET 9.0 SDK
+4. Install Rust toolchain via rustup
+5. Install Node.js LTS
+6. Install Visual Studio Code
+
+## Verification
+
+After installation, verify the requirements:
+
+```bash
+# Check .NET versions
+dotnet --list-sdks
+dotnet --list-runtimes
+
+# Check Rust
+rustc --version
+cargo --version
+
+# Check Node.js
+node --version
+npm --version
+```
+
+## Build Instructions
+
+Once all requirements are installed, see:
+- `documentation/instructions-for-compile.md` - Detailed build instructions
+- `CLAUDE.md` - Project overview and development guidelines
+
+## Notes
+
+- All download links point to official Microsoft and project websites
+- Files in `dotNet/` directory are offline installers for convenience
+- Always verify file integrity from official sources
+- These requirements are for Windows development environment

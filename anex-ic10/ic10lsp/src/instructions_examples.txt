@@ -1,0 +1,148 @@
+---
+---
+        bottom_parts.push(format!("📖 [View Related Instructions](command:ic10.showRelated?{})", instruction));
+        bottom_parts.push(format!("🔍 [Search {} Operations](command:ic10.searchCategory?{})", category, category));
+  ... and {} more operations
+  • Line {}: `{}`
+ {parameter}
+)
+)  # Prefab Hash of Station Battery
+) On r0\nsbn TurboVolumePump TurboVolPumpIntake Setting r13\nsbn DisplayMedium DisplayHour Color hourColor
+) On r1\nsb heaterHASH Setting targetTemperature
+) PowerGeneration Maximum
+) Temperature 0\nlbn r0 PipeAnalyser AnalyserBeforePump Pressure 0\nlbn vertical DaylightSensor DaylightSensorClock Vertical 0
+**{}**
+**{}**\n\n{}
+**Category:** {}
+**Examples:**
+**Register {} Operation History:**
+**Related:** {}
+, 
+\n
+\n\n
+\n\n
+`{}`
+{} ({})
+abs
+abs
+abs
+abs r0 r1         # Simple: r0 = absolute value of r1\nabs r2 temperature # Get absolute temperature\nabs magnitude velocity
+add r0 r1 r2      # Simple: r0 = r1 + r2\nadd r7 r5 r6      # Total charge from both batteries\nadd r10 r8 r9   # Total max power
+Advanced
+alias temp r0        # Simple: name r0 as 'temp'\nalias sensor d0       # Simple: name d0 as 'sensor'\nalias currentRoomPressure r4  # Room pressure reading
+and r0 r1 r2      # Simple: r0 = 1 if both r1 and r2 not zero\nand r3 power heat  # Check both power and heat\nand ready sensor1 sensor2
+Arithmetic
+Arithmetic
+Arithmetic
+Arithmetic
+Arithmetic
+Assembly
+atan
+atan
+Batch Operations
+bdns d1 off         # Simple: branch to 'off' if d1 not set\nbdns pump shutdown # Branch to 'shutdown' if pump not set\nbdns furnace heat_off
+bdse d0 ready       # Simple: branch to 'ready' if d0 is set\nbdse sensor loop   # Branch to 'loop' if sensor is set\nbdse pump pump_active
+beq
+beq
+beq r0 r1 loop     # Simple: branch to 'loop' if r0 == r1\nbeq r12 r11 end    # Branch to 'end' if recipe matches\nbeq leverState01 0 InitialSetup
+beqz
+beqz r0 off        # Simple: branch to 'off' if r0 == 0\nbeqz leverState01 InitialSetup  # Restart if lever off\nbeqz r7 end
+bge r0 r1 ready    # Simple: branch if r0 >= r1\nbge currentRoomPressure targetRoomPressure StopActiveVents\nbge pressure 1000 emergency
+bgez
+bgt
+bgt
+bgt r0 100 heating # Simple: branch if r0 > 100\nbgt r12 1 2        # Skip next instruction if ratio > 1\nbgt leverState02 0 FillRoomMode
+bgtal
+bgtz
+ble r0 10 low      # Simple: branch if r0 <= 10\nble r1 7 2         # Skip next 2 instructions\nble temp 373 normal
+blez
+blt
+blt r0 50 cooling  # Simple: branch if r0 < 50\nblt r15 8000 2     # Skip if fuel pressure low\nblt temp 273 heat_on
+bltz
+bne
+bne
+bne r0 r1 loop     # Simple: branch to 'loop' if r0 != r1\nbne r2 0 continue  # Continue if r2 is not zero\nbne temp 0 continue
+bneal
+bnez
+bnez r0 loop       # Simple: branch to 'loop' if r0 != 0\nbnez r1 active     # Jump to 'active' if r1 is not zero\nbnez power continue
+bnezal r0 subroutine     # Simple: call 'subroutine' if r0 != 0\nbnezal r2 ProcessData      # Call function if r2 is true\nbnezal condition ProcessGas
+Branch and Link
+Branch and Link
+Branch and Link
+Branching
+Branching
+Branching
+brgt
+Comparison
+Comparison
+Comparison
+Control Flow
+cos r0 r1         # Simple: r0 = cosine of r1 (radians)\ncos r2 angle       # Calculate cosine\ncos x_pos angle
+Device I/O
+Device Status
+div
+div
+div
+div r0 r1 r2      # Simple: r0 = r1 / r2\ndiv timeRemaining r2 r3  # Power reserve in seconds\ndiv chargePercent totalCharge r10
+floor r0 r1             # Simple: r0 = floor of r1\nfloor r2 temperature       # Round down temperature\nfloor minutes minutes     # Round down to integer
+Flow Control
+hcf
+hcf
+ic10
+ic10
+j loop             # Jump to 'loop' label\nj main             # Jump to 'main' label
+jal subroutine     # Jump to subroutine, save return address\njal calculate_avg  # Call function
+jr ra             # Return from subroutine\njr r15            # Jump to address in r15
+l
+l r0 d0 Temperature     # Simple: read temperature from device 0\nl currentRoomPressure gasSensor Pressure\nl leverState01 leverSwitch01 Open
+label
+label
+log
+Logic
+lr
+lr r0 d1 Contents Iron  # Simple: read iron content from d1\nlr r2 furnace Required Uranium\nlr totalMoles centrifuge Contents Volatiles
+ls
+ls r0 d0 0 Occupied     # Simple: check if slot 0 occupied in d0\nls r1 sorter 1 Quantity\nls quantity conveyor 2 Damage
+max r0 r1 r2             # Simple: r0 = maximum of r1 and r2\nmax r3 temp 0             # Ensure temp >= 0\nmax r13 r13 MinPumpSetting
+min r0 r1 r2             # Simple: r0 = minimum of r1 and r2\nmin r3 temp 100           # Limit temp to max 100\nmin r13 r13 MaxPumpSetting
+mod
+mod
+mod
+mod
+mod r0 r1 r2      # r0 = r1 mod r2\nmod r0 timer 10   # r0 = timer mod 10
+mul r0 r1 r2      # Simple: r0 = r1 * r2\nmul r3 r1 2       # PowerRequired in 1 second\nmul r15 r15 r14  # Temperature * TotalMoles
+nor
+nor
+nor
+or
+or r0 r1 r2       # Simple: r0 = 1 if r1 or r2 not zero\nor r3 error1 error2 # Check any error\nor alarm high_temp low_pressure
+peek
+register
+Register Operations
+Relative Branching
+Relative Branching
+Relative Branching
+round r0 r1             # Simple: r0 = rounded r1\nround r2 pressure          # Round pressure value\nround timeRemaining timeRemaining
+s
+s d1 Setting r0         # Simple: set device 1 setting to r0\ns pressureRegulator Setting targetPipePressure\ns db Setting currentRoomPressure
+sbs
+sbs
+sd
+sd
+sdns
+sdns
+select r0 r1 10 20       # Simple: r0 = 10 if r1!=0, else 20\nselect r2 isEast 1 0       # Choose 1 if east, 0 if west\nselect r9 playerOrigin 0 1   # Choose door index
+seq r0 r1 r2       # Simple: r0 = 1 if r1 == r2\nseq r3 temp 273    # Check if temp == 273\nseq ready power 1
+sgt
+sgt r0 r1 r2       # Simple: r0 = 1 if r1 > r2\nsgt r3 temp 200    # Check if temp > 200\nsgt r6 press maxpress
+sin r0 r1         # Simple: r0 = sine of r1 (radians)\nsin r2 angle       # Calculate sine\nsin y_pos angle
+sleep 1           # Wait 1 second between readings\nsleep 3           # Wait before checking vents again
+slt r0 r1 r2       # Simple: r0 = 1 if r1 < r2\nslt r3 temp 100    # Check if temp < 100\nslt r10 temp mintemp
+sne r0 r1 r2       # Simple: r0 = 1 if r1 != r2\nsne r3 temp 0      # Check if temp != 0\nsne active error 0
+snez r0 r1               # Simple: r0=1 if r1>0, else 0\nsnez r2 pressure          # Check if pressure exists\nsnez r14 r3                # Check if nitrogen detected
+sqrt r0 r1        # Simple: r0 = square root of r1\nsqrt r2 r3         # Calculate square root\nsqrt distance r1  # distance = sqrt(r1)
+Stack Operations
+sub r0 r1 r2      # Simple: r0 = r1 - r2\nsub currentRoomTemperature currentRoomTemperature 273.15\nsub temp temp 10  # temp = temp - 10
+trunc r0 r1             # Simple: r0 = integer part of r1\ntrunc r2 temperature       # Remove decimal from temp\ntrunc result calculation   # Integer portion only
+xor
+yield             # Allow other scripts to run\nyield             # Pause execution for 1 tick

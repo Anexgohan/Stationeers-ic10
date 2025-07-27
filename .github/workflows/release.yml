@@ -116,10 +116,11 @@ jobs:
             ## 📦 Installation
             
             The extension will auto-update through VS Code, or install manually:
-            1. Open VS Code
-            2. Go to Extensions (Ctrl+Shift+X)  
-            3. Search for "Anex's IC10 Language Support"
-            4. Click Update/Install
+            1. Open Visual Studio Code.
+            2. Press Ctrl+P to open the Quick Open dialog.
+            3. Type ext install vsix
+            4. Select the latest version of the extension and press Enter.
+            5. Once the extension is installed, you can start using it by opening .ic10 files.
             
             ---
             

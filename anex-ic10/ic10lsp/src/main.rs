@@ -1085,6 +1085,11 @@ impl LanguageServer for Backend {
             }
         }
 
+        // Add instruction-based code actions for enhanced interactivity
+        if let Some(instruction_actions) = additional_features::get_instruction_code_actions(&node, &document.content) {
+            ret.extend(instruction_actions);
+        }
+
         Ok(Some(ret))
     }
 
@@ -1280,8 +1285,24 @@ impl LanguageServer for Backend {
             }
             "operation" | "invalid_instruction" => {
                 if let Some(_signature) = instructions::INSTRUCTIONS.get(name) {
+                    // Find the parent instruction node to analyze registers
+                    let instruction_node = node.find_parent("instruction").unwrap_or(node);
+                    
+                    // Create register analyzer to get operation history
+                    let mut register_analyzer = additional_features::RegisterAnalyzer::new();
+                    if let Some(tree) = document.tree.as_ref() {
+                        register_analyzer.analyze_register_usage(tree, &document.content, &type_data.aliases);
+                    }
+                    
                     return Ok(Some(Hover {
-                        contents: HoverContents::Array(tooltip_documentation::create_enhanced_instruction_hover(name)),
+                        contents: HoverContents::Array(
+                            tooltip_documentation::create_enhanced_instruction_hover_with_history(
+                                name, 
+                                instruction_node, 
+                                &document.content,
+                                &register_analyzer
+                            )
+                        ),
                         range: Some(Range::from(node.range()).into()),
                     }));
                 }
@@ -2031,6 +2052,7 @@ impl Backend {
             .publish_diagnostics(uri.to_owned(), diagnostics, None)
             .await;
     }
+
 }
 
 fn get_current_parameter(instruction_node: Node, position: usize) -> (usize, Option<Node>) {

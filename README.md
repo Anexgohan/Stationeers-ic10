@@ -15,19 +15,25 @@ This Visual Studio Code extension provides syntax highlighting, IntelliSense, an
 
 - **Syntax highlighting** for IC10 language files (`.ic10`)
 - **Code autocompletion** with intelligent suggestions for all IC10 instructions
-- **Hover information** with detailed device descriptions and instruction help
+- **🆕 Enhanced Hover Documentation** - Comprehensive instruction guides with examples and history
+  - **Complete Instruction Coverage** - Documentation for all 80+ IC10 instructions including batch operations
+  - **Multi-Example Learning** - 3+ examples per instruction (simple → intermediate → advanced)
+  - **Register Operation History** - See chronological history of all operations performed on registers
+  - **Syntax-Highlighted Examples** - Proper IC10 code rendering in hover tooltips
+  - **Categorized Discovery** - 8 instruction categories (Arithmetic, Device I/O, Batch Operations, etc.)
+  - **Related Instructions** - Quick discovery of similar commands through enhanced tooltips
 - **Signature help** for function parameters and instruction usage
 - **Go to definition** for labels and variables
 - **Diagnostics** with comprehensive syntax error detection and code length limits
-- **🆕 HASH() Function Support** - Advanced device hash calculations with inline hints
+- **HASH() Function Support** - Advanced device hash calculations with inline hints
   - `define Pump HASH("StructureVolumePump")` → Shows "Volume Pump" inline hint
   - `define Sensor -1252983604` → Shows "Gas Sensor" inline hint  
   - **100+ devices supported** including all common IC10 automation devices
   - **Smart typo handling** (e.g., "StructurePipeAnalysizer" works correctly)
   - **Hover tooltips** show device names for hash values in your code
-- **🆕 Enhanced Language Server** with improved performance and stability
-- **🆕 Code length validation** - Warns when approaching Stationeers' 4096-byte limit
-- **🆕 Comprehensive instruction database** with latest Stationeers updates
+- **Enhanced Language Server** with improved performance and stability
+- **Code length validation** - Warns when approaching Stationeers' 4096-byte limit
+- **Comprehensive instruction database** with latest Stationeers updates
 
 ## Installation
 
@@ -45,6 +51,11 @@ This Visual Studio Code extension provides syntax highlighting, IntelliSense, an
 After installing the extension, you can use it by opening any `.ic10` file in Visual Studio Code. The extension will automatically activate and provide syntax highlighting and language features for your IC10 MIPS-like code.
 
 ### Key Features in Action:
+- ### **Enhanced Hover Documentation**: Comprehensive instruction guides with examples and operation history
+  - Complete coverage of all IC10 instructions including batch operations (lbn, sbn, lbs, etc.)
+  - Multiple examples per instruction from simple to advanced patterns
+  - Register operation history showing chronological timeline of register usage
+  - Syntax-highlighted code examples in hover tooltips
 - ### **Smart Completions**: Type instruction names to see all available options with documentation
   ![fuzzy search](images/fuzzy-search.gif)
 - ### **Inline Hints**: inline hints for device hashes in your code

@@ -54,6 +54,13 @@ pub(crate) const INSTRUCTION_EXAMPLES: phf::Map<&'static str, &'static str> = ph
     "snez" => "snez r0 r1               # Simple: r0=1 if r1>0, else 0\nsnez r2 pressure          # Check if pressure exists\nsnez r14 r3                # Check if nitrogen detected",
     "bnezal" => "bnezal r0 subroutine     # Simple: call 'subroutine' if r0 != 0\nbnezal r2 ProcessData      # Call function if r2 is true\nbnezal condition ProcessGas",
     "trunc" => "trunc r0 r1             # Simple: r0 = integer part of r1\ntrunc r2 temperature       # Remove decimal from temp\ntrunc result calculation   # Integer portion only",
+    "lbs" => "lbs r0 HASH(\"Processor\") 0 Occupied Average  # Simple: average slot 0 occupancy\nlbs r1 HASH(\"Furnace\") 1 Quantity Sum\nlbs totalOre HASH(\"Centrifuge\") 2 Quantity Maximum",
+    "lbns" => "lbns r0 HASH(\"Processor\") HASH(\"Circuit\") 0 Occupied Average  # Simple: slot occupancy by type\nlbns r1 HASH(\"Furnace\") HASH(\"Coal\") 1 Quantity Sum\nlbns result HASH(\"Sorter\") itemHash 0 Damage Minimum",
+    "not" => "not r0 r1               # Simple: r0 = 1 if r1 is 0, else 0\nnot r2 powered            # Invert powered state\nnot r15 error             # Check if no error",
+    "sla" => "sla r0 r1 2             # Simple: r0 = r1 shifted left 2 bits\nsla r2 value 3            # Multiply by 8 using shift\nsla result data shiftAmount",
+    "sll" => "sll r0 r1 2             # Simple: r0 = r1 shifted left 2 bits\nsll r2 flags 1            # Logical left shift\nsll result mask bitCount",
+    "sra" => "sra r0 r1 2             # Simple: r0 = r1 shifted right 2 bits\nsra r2 value 3            # Divide by 8 using shift\nsra result data shiftAmount",
+    "srl" => "srl r0 r1 2             # Simple: r0 = r1 shifted right 2 bits\nsrl r2 flags 1            # Logical right shift\nsrl result mask bitCount",
 };
 
 pub(crate) const INSTRUCTION_CATEGORIES: phf::Map<&'static str, &'static str> = phf_map! {
@@ -63,14 +70,15 @@ pub(crate) const INSTRUCTION_CATEGORIES: phf::Map<&'static str, &'static str> = 
     "sin" => "Arithmetic", "cos" => "Arithmetic", "tan" => "Arithmetic", "asin" => "Arithmetic", "acos" => "Arithmetic", "atan" => "Arithmetic", "atan2" => "Arithmetic",
     "exp" => "Arithmetic", "log" => "Arithmetic", "rand" => "Arithmetic",
     "l" => "Device I/O", "s" => "Device I/O", "lr" => "Device I/O", "ls" => "Device I/O", "ld" => "Device I/O", "sd" => "Device I/O", "ss" => "Device I/O",
-    "lb" => "Batch Operations", "sb" => "Batch Operations", "lbn" => "Batch Operations", "lbs" => "Batch Operations", "sbn" => "Batch Operations", "sbs" => "Batch Operations",
+    "lb" => "Batch Operations", "sb" => "Batch Operations", "lbn" => "Batch Operations", "lbs" => "Batch Operations", "lbns" => "Batch Operations", "sbn" => "Batch Operations", "sbs" => "Batch Operations",
     "move" => "Register Operations", "select" => "Register Operations", "peek" => "Register Operations", "push" => "Register Operations", "pop" => "Register Operations",
     "get" => "Stack Operations", "getd" => "Stack Operations", "put" => "Stack Operations", "putd" => "Stack Operations", "poke" => "Stack Operations", "clr" => "Stack Operations", "clrd" => "Stack Operations",
     "slt" => "Comparison", "sgt" => "Comparison", "sle" => "Comparison", "sge" => "Comparison", "seq" => "Comparison", "sne" => "Comparison",
     "sltz" => "Comparison", "sgtz" => "Comparison", "slez" => "Comparison", "sgez" => "Comparison", "seqz" => "Comparison", "snez" => "Comparison",
     "sap" => "Comparison", "sna" => "Comparison", "sapz" => "Comparison", "snaz" => "Comparison", "snan" => "Comparison", "snanz" => "Comparison",
     "sdse" => "Device Status", "sdns" => "Device Status", "bdse" => "Device Status", "bdns" => "Device Status", "brdse" => "Device Status", "brdns" => "Device Status",
-    "and" => "Logic", "or" => "Logic", "xor" => "Logic", "nor" => "Logic",
+    "and" => "Logic", "or" => "Logic", "xor" => "Logic", "nor" => "Logic", "not" => "Logic",
+    "sla" => "Bit Operations", "sll" => "Bit Operations", "sra" => "Bit Operations", "srl" => "Bit Operations",
     "j" => "Control Flow", "jr" => "Control Flow", "jal" => "Control Flow",
     "beq" => "Branching", "bne" => "Branching", "blt" => "Branching", "bgt" => "Branching", "ble" => "Branching", "bge" => "Branching",
     "beqz" => "Branching", "bnez" => "Branching", "bltz" => "Branching", "bgtz" => "Branching", "blez" => "Branching", "bgez" => "Branching",
@@ -94,8 +102,8 @@ pub(crate) const RELATED_INSTRUCTIONS: phf::Map<&'static str, &'static [&'static
     "mod" => &["add", "sub", "mul", "div"],
     "l" => &["s", "lb", "sb", "lr", "ls", "ld", "sd"],
     "s" => &["l", "lb", "sb", "lr", "ls", "ld", "sd"],
-    "lb" => &["l", "s", "sb", "lbn", "lbs", "sbn", "sbs"],
-    "sb" => &["l", "s", "lb", "lbn", "lbs", "sbn", "sbs"],
+    "lb" => &["l", "s", "sb", "lbn", "lbs", "lbns", "sbn", "sbs"],
+    "sb" => &["l", "s", "lb", "lbn", "lbs", "lbns", "sbn", "sbs"],
     "ls" => &["l", "s", "lb", "sb", "lr"],
     "lr" => &["l", "s", "lb", "sb", "ls"],
     "beq" => &["bne", "blt", "bgt", "ble", "bge", "breq", "beqz"],
@@ -127,8 +135,8 @@ pub(crate) const RELATED_INSTRUCTIONS: phf::Map<&'static str, &'static [&'static
     "yield" => &["sleep", "hcf"],
     "alias" => &["define", "label"],
     "define" => &["alias", "label"],
-    "lbn" => &["lb", "sbn", "sb", "l", "s"],
-    "sbn" => &["sb", "lbn", "lb", "s", "l"],
+    "lbn" => &["lb", "lbs", "lbns", "sbn", "sb", "sbs"],
+    "sbn" => &["sb", "lbn", "lbs", "lbns", "lb", "sbs"],
     "min" => &["max", "add", "sub", "mul", "div"],
     "max" => &["min", "add", "sub", "mul", "div"],
     "floor" => &["round", "trunc", "ceil", "abs"],
@@ -137,6 +145,13 @@ pub(crate) const RELATED_INSTRUCTIONS: phf::Map<&'static str, &'static [&'static
     "snez" => &["seq", "sne", "slt", "sgt"],
     "select" => &["move", "beq", "bne", "and", "or"],
     "bnezal" => &["bnez", "jal", "beqal", "bneal"],
+    "lbs" => &["lb", "lbn", "lbns", "sb", "sbn", "sbs"],
+    "lbns" => &["lbs", "lbn", "lb", "sbn", "sb", "sbs"],
+    "not" => &["and", "or", "xor", "nor"],
+    "sla" => &["sll", "sra", "srl"],
+    "sll" => &["sla", "sra", "srl"],
+    "sra" => &["sla", "sll", "srl"],
+    "srl" => &["sla", "sll", "sra"],
 };
 
 /// Helper functions for enhanced hover documentation
@@ -187,14 +202,31 @@ pub(crate) fn create_enhanced_instruction_hover(instruction: &str) -> Vec<tower_
         markdown_parts.push(format!("**{}**", instruction));
     }
     
-    // Add examples if available
+    // Add the description first
+    let initial_content = markdown_parts.join("\n\n");
+    hover_content.push(MarkedString::String(initial_content));
+    
+    // Add examples immediately after description (restore original order)
     if let Some(examples) = get_instruction_examples(instruction) {
-        markdown_parts.push(format!("**Examples:**\n```ic10\n{}\n```", examples));
+        hover_content.push(MarkedString::String("**Examples:**".to_string()));
+        
+        // Split examples by newlines and add each as a syntax-highlighted language string
+        let example_lines: Vec<&str> = examples.split('\n').collect();
+        for example in example_lines {
+            if !example.trim().is_empty() {
+                hover_content.push(MarkedString::LanguageString(LanguageString {
+                    language: "ic10".to_string(),
+                    value: example.trim().to_string(),
+                }));
+            }
+        }
     }
     
-    // Add category and related instructions
+    // Add category and related instructions at the bottom
+    let mut bottom_parts = Vec::new();
+    
     if let Some(category) = get_instruction_category(instruction) {
-        markdown_parts.push(format!("**Category:** {}", category));
+        bottom_parts.push(format!("**Category:** {}", category));
     }
     
     if let Some(related) = get_related_instructions(instruction) {
@@ -204,20 +236,83 @@ pub(crate) fn create_enhanced_instruction_hover(instruction: &str) -> Vec<tower_
                 .map(|r| format!("`{}`", r))
                 .collect::<Vec<_>>()
                 .join(", ");
-            markdown_parts.push(format!("**Related:** {}", related_list));
+            bottom_parts.push(format!("**Related:** {}", related_list));
         }
     }
     
-    // Add interactive links (these will be implemented in VS Code extension)
-    markdown_parts.push("---".to_string());
-    if let Some(category) = get_instruction_category(instruction) {
-        markdown_parts.push(format!("📖 [View Related Instructions](command:ic10.showRelated?{})", instruction));
-        markdown_parts.push(format!("🔍 [Search {} Operations](command:ic10.searchCategory?{})", category, category));
+    // Add interactive guidance hint only
+    bottom_parts.push("---".to_string());
+    if let Some(_category) = get_instruction_category(instruction) {
+        bottom_parts.push("💡 **Interactive Actions:** Press **Ctrl+.** or click the lightbulb 💡".to_string());
     }
     
-    // Combine all markdown parts
-    let markdown_content = markdown_parts.join("\n\n");
-    hover_content.push(MarkedString::String(markdown_content));
+    // Add the bottom content
+    if !bottom_parts.is_empty() {
+        let bottom_content = bottom_parts.join("\n\n");
+        hover_content.push(MarkedString::String(bottom_content));
+    }
+    
+    hover_content
+}
+
+/// Create enhanced hover content with integrated operation history
+pub(crate) fn create_enhanced_instruction_hover_with_history(
+    instruction: &str, 
+    instruction_node: tree_sitter::Node,
+    content: &str,
+    register_analyzer: &crate::additional_features::RegisterAnalyzer
+) -> Vec<tower_lsp::lsp_types::MarkedString> {
+    use tower_lsp::lsp_types::MarkedString;
+    
+    // Start with the base instruction hover content
+    let mut hover_content = create_enhanced_instruction_hover(instruction);
+    
+    // Try to find registers in this instruction and add their operation history
+    let mut register_histories = Vec::new();
+    
+    // Parse the instruction to find registers
+    let mut cursor = instruction_node.walk();
+    for child in instruction_node.children(&mut cursor) {
+        if child.kind() == "register" {
+            if let Ok(register_name) = child.utf8_text(content.as_bytes()) {
+                if let Some(register_info) = register_analyzer.get_register_info(register_name) {
+                    if !register_info.operation_history.is_empty() {
+                        let display_name = register_info.alias_name.as_ref()
+                            .map(|alias| format!("{} ({})", alias, register_name))
+                            .unwrap_or_else(|| register_name.to_string());
+                        
+                        let mut history_parts = vec![format!("**Register {} Operation History:**", display_name)];
+                        
+                        // Limit history to avoid overwhelming the tooltip
+                        let history_limit = 5; // Fewer entries when combined with instruction docs
+                        let start_idx = if register_info.operation_history.len() > history_limit {
+                            register_info.operation_history.len() - history_limit
+                        } else {
+                            0
+                        };
+                        
+                        for record in &register_info.operation_history[start_idx..] {
+                            history_parts.push(format!("  • Line {}: `{}`", record.line_number, record.operation));
+                        }
+                        
+                        if start_idx > 0 {
+                            history_parts.push(format!("  ... and {} more operations", start_idx));
+                        }
+                        
+                        register_histories.push(history_parts.join("\n"));
+                    }
+                }
+            }
+        }
+    }
+    
+    // Add register histories if any were found
+    if !register_histories.is_empty() {
+        hover_content.push(MarkedString::String("---".to_string()));
+        for history in register_histories {
+            hover_content.push(MarkedString::String(history));
+        }
+    }
     
     hover_content
 }

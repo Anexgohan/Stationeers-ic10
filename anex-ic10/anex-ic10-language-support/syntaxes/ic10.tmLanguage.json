@@ -25,7 +25,7 @@
         "patterns": [
           {
             "name": "keyword.control.ic10",
-            "match": "\\b(l|s|ls|lr|sb|lb|alias|move|add|sub|sdse|sdns|slt|sgt|sle|sge|seq|sne|sap|sna|and|or|xor|nor|mul|div|mod|j|bltz|bgez|blez|bgtz|bdse|bdns|beq|bne|bap|bna|jal|brdse|brdns|bltzal|bgezal|blezal|bgtzal|beqal|bneal|jr|bdseal|bdnsal|brltz|brgez|brlez|brgtz|breq|brne|brap|brna|sqrt|round|trunc|ceil|floor|max|min|abs|log|exp|rand|yield|label|peek|push|pop|hcf|select|blt|bgt|ble|bge|brlt|brgt|brle|brge|bltal|bgtal|bleal|bgeal|bapal|bnaal|beqz|bnez|bapz|bnaz|breqz|brnez|brapz|brnaz|beqzal|bnezal|bapzal|bnazal|sltz|sgtz|slez|sgez|seqz|snez|sapz|snaz|define|sleep|sin|asin|tan|atan|cos|acos|atan)\\b"
+            "match": "\\b(l|s|ls|lr|sb|lb|lbn|sbn|lbs|sbs|lbns|sbns|alias|move|add|sub|sdse|sdns|slt|sgt|sle|sge|seq|sne|sap|sna|and|or|xor|nor|mul|div|mod|j|bltz|bgez|blez|bgtz|bdse|bdns|beq|bne|bap|bna|jal|brdse|brdns|bltzal|bgezal|blezal|bgtzal|beqal|bneal|jr|bdseal|bdnsal|brltz|brgez|brlez|brgtz|breq|brne|brap|brna|sqrt|round|trunc|ceil|floor|max|min|abs|log|exp|rand|yield|label|peek|push|pop|hcf|select|blt|bgt|ble|bge|brlt|brgt|brle|brge|bltal|bgtal|bleal|bgeal|bapal|bnaal|beqz|bnez|bapz|bnaz|breqz|brnez|brapz|brnaz|beqzal|bnezal|bapzal|bnazal|sltz|sgtz|slez|sgez|seqz|snez|sapz|snaz|define|sleep|sin|asin|tan|atan|cos|acos|atan)\\b"
           },
           {
             "begin": "\\s+",

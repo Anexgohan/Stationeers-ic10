@@ -1,0 +1,5 @@
+alias temp r0
+move temp 100
+add temp temp 50
+lb r1 HASH("StructureBattery") Charge Average
+lbn r2 HASH("Sensor") HASH("TempSensor") Temperature 0

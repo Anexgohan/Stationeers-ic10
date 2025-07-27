@@ -9,7 +9,7 @@
     "displayName": "Anex's IC10 Language Support",
     "description": "IC10 MIPS-like Language Support for Stationeers - Featuring completions, hover information, signature help, goto definition, diagnostics, and more.",
     "publisher": "Anex",
-    "version": "1.5.0",
+    "version": "1.6.0",
     "engines": {
         "vscode": "^1.101.2"
     },
@@ -58,6 +58,11 @@
                 "command": "ic10.searchCategory",
                 "title": "IC10: Search Instruction Category",
                 "description": "Search instructions by category"
+            },
+            {
+                "command": "ic10.showExamples",
+                "title": "IC10: Show Instruction Examples",
+                "description": "Show examples for the current instruction"
             }
         ],
         "configuration": {

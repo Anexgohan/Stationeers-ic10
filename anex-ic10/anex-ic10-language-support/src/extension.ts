@@ -12,6 +12,40 @@ import {
     ExecuteCommandParams
 } from 'vscode-languageclient/node';
 
+// Helper function to get instruction examples
+function getInstructionExamples(instruction: string): string[] {
+    // Basic examples for common instructions - this could be expanded
+    const examples: { [key: string]: string[] } = {
+        'add': [
+            'add r0 r1 r2      # Simple: r0 = r1 + r2',
+            'add r7 r5 r6      # Total charge from both batteries',
+            'add r10 r8 r9     # Total max power'
+        ],
+        'sub': [
+            'sub r0 r1 r2      # Simple: r0 = r1 - r2',
+            'sub currentRoomTemperature currentRoomTemperature 273.15',
+            'sub temp temp 10  # temp = temp - 10'
+        ],
+        'mul': [
+            'mul r0 r1 r2      # Simple: r0 = r1 * r2',
+            'mul r3 r1 2       # PowerRequired in 1 second',
+            'mul r15 r15 r14   # Temperature * TotalMoles'
+        ],
+        'l': [
+            'l r0 d0 Temperature     # Simple: read temperature from device 0',
+            'l currentRoomPressure gasSensor Pressure',
+            'l leverState01 leverSwitch01 Open'
+        ],
+        's': [
+            's d1 Setting r0         # Simple: set device 1 setting to r0',
+            's pressureRegulator Setting targetPipePressure',
+            's db Setting currentRoomPressure'
+        ]
+    };
+    
+    return examples[instruction.toLowerCase()] || [];
+}
+
 function getLSPIC10Configurations(): vscode.WorkspaceConfiguration {
     return vscode.workspace.getConfiguration('ic10.lsp');
 }
@@ -232,6 +266,42 @@ export function activate(context: vscode.ExtensionContext) {
                 });
             }
         }
+    }));
+
+    // Register ic10.showExamples command
+    context.subscriptions.push(vscode.commands.registerCommand('ic10.showExamples', async (instruction?: string) => {
+        // If instruction not provided, try to get current word at cursor
+        if (!instruction) {
+            const editor = vscode.window.activeTextEditor;
+            if (!editor) {
+                vscode.window.showInformationMessage('No active editor found');
+                return;
+            }
+            
+            const position = editor.selection.active;
+            const range = editor.document.getWordRangeAtPosition(position);
+            if (!range) {
+                vscode.window.showInformationMessage('No instruction found at cursor');
+                return;
+            }
+            
+            instruction = editor.document.getText(range);
+        }
+
+        // Show examples in an information message (could be enhanced to use a webview)
+        const examples = getInstructionExamples(instruction);
+        if (examples.length === 0) {
+            vscode.window.showInformationMessage(`No examples found for instruction '${instruction}'`);
+            return;
+        }
+
+        // For now, show examples in a simple information dialog
+        // In a more advanced implementation, this could show in a dedicated panel
+        const exampleText = examples.join('\n');
+        vscode.window.showInformationMessage(
+            `Examples for ${instruction}:\n\n${exampleText}`,
+            { modal: false }
+        );
     }));
 
 }
