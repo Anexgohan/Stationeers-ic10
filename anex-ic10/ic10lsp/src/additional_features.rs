@@ -5,10 +5,17 @@ use tree_sitter::{Query, QueryCursor, Tree};
 use crate::Range;
 
 #[derive(Debug, Clone)]
+pub struct OperationRecord {
+    pub line_number: u32,
+    pub operation: String,           // "add temp temp 50"
+}
+
+#[derive(Debug, Clone)]
 pub struct RegisterUsage {
-    pub assignments: Vec<Range>,  // Where register is assigned values
-    pub reads: Vec<Range>,        // Where register is read/used
-    pub alias_name: Option<String>, // If register has an alias
+    pub assignments: Vec<Range>,     // Where register is assigned values
+    pub reads: Vec<Range>,           // Where register is read/used
+    pub alias_name: Option<String>,  // If register has an alias
+    pub operation_history: Vec<OperationRecord>, // Simple history of operations
 }
 
 #[derive(Debug, Clone)]
@@ -25,6 +32,7 @@ impl RegisterUsage {
             assignments: Vec::new(),
             reads: Vec::new(),
             alias_name: None,
+            operation_history: Vec::new(),
         }
     }
     
@@ -59,35 +67,40 @@ impl RegisterUsage {
 
 pub struct RegisterAnalyzer {
     register_usage: HashMap<String, RegisterUsage>,
+    alias_to_register: HashMap<String, String>, // alias -> register mapping for quick lookup
 }
 
 impl RegisterAnalyzer {
     pub fn new() -> Self {
         Self {
             register_usage: HashMap::new(),
+            alias_to_register: HashMap::new(),
         }
     }
 
     pub fn analyze_register_usage(&mut self, tree: &Tree, content: &str, aliases: &HashMap<String, crate::DefinitionData<crate::AliasValue>>) {
         self.register_usage.clear();
+        self.alias_to_register.clear();
         
         // Initialize all known registers
         for reg in ["r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8", "r9", "r10", "r11", "r12", "r13", "r14", "r15", "ra", "sp"] {
             self.register_usage.insert(reg.to_string(), RegisterUsage::new());
         }
         
-        // Add aliased registers
+        // Add aliased registers and build alias mapping
         for (alias_name, alias_data) in aliases {
             if let crate::AliasValue::Register(reg_name) = &alias_data.value {
                 if let Some(usage) = self.register_usage.get_mut(reg_name) {
                     usage.alias_name = Some(alias_name.clone());
                 }
+                self.alias_to_register.insert(alias_name.clone(), reg_name.clone());
             }
         }
         
         self.detect_register_assignments(tree, content, aliases);
         self.detect_register_reads(tree, content, aliases);
         self.detect_jal_ra_assignments(tree, content);
+        self.track_operation_history(tree, content, aliases);
     }
     
     fn detect_register_assignments(&mut self, tree: &Tree, content: &str, aliases: &HashMap<String, crate::DefinitionData<crate::AliasValue>>) {
@@ -252,7 +265,7 @@ impl RegisterAnalyzer {
             match usage.get_state() {
                 RegisterState::Unused => {
                     // Only warn about unused aliases, not bare registers
-                    if let Some(alias_name) = &usage.alias_name {
+                    if let Some(_alias_name) = &usage.alias_name {
                         // We don't have the alias definition range here, would need to pass it
                         // This will be handled when integrating with main diagnostics
                     }
@@ -300,7 +313,111 @@ impl RegisterAnalyzer {
         diagnostics
     }
     
+    fn track_operation_history(&mut self, tree: &Tree, content: &str, aliases: &HashMap<String, crate::DefinitionData<crate::AliasValue>>) {
+        let mut cursor = QueryCursor::new();
+        
+        // Query for all instructions in order
+        let instruction_query = Query::new(
+            tree_sitter_ic10::language(),
+            "(instruction (operation) @op) @instruction",
+        ).unwrap();
+        
+        let op_idx = instruction_query.capture_index_for_name("op").unwrap();
+        let instruction_idx = instruction_query.capture_index_for_name("instruction").unwrap();
+        
+        for (capture, _) in cursor.captures(&instruction_query, tree.root_node(), content.as_bytes()) {
+            let mut operation = None;
+            let mut instruction_node = None;
+            
+            for cap in capture.captures {
+                if cap.index == op_idx {
+                    operation = Some(cap.node.utf8_text(content.as_bytes()).unwrap());
+                } else if cap.index == instruction_idx {
+                    instruction_node = Some(cap.node);
+                }
+            }
+            
+            if let (Some(op), Some(inst_node)) = (operation, instruction_node) {
+                self.add_operation_to_history(op, inst_node, content, aliases);
+            }
+        }
+    }
+    
+    fn add_operation_to_history(&mut self, operation: &str, instruction_node: tree_sitter::Node, content: &str, aliases: &HashMap<String, crate::DefinitionData<crate::AliasValue>>) {
+        if !self.is_assignment_operation(operation) {
+            return;
+        }
+        
+        let mut tree_cursor = instruction_node.walk();
+        let operands: Vec<_> = instruction_node.children_by_field_name("operand", &mut tree_cursor).collect();
+        
+        if operands.is_empty() {
+            return;
+        }
+        
+        // Get target register (first operand)
+        let target_register = self.get_register_from_operand(&operands[0], content, aliases);
+        if target_register.is_empty() {
+            return;
+        }
+        
+        let line_number = instruction_node.start_position().row as u32 + 1;
+        let instruction_text = instruction_node.utf8_text(content.as_bytes()).unwrap_or("");
+        
+        // Update register usage with simple operation history
+        if let Some(usage) = self.register_usage.get_mut(&target_register) {
+            // Avoid duplicate entries for the same line
+            let should_add_record = usage.operation_history.last()
+                .map_or(true, |last_record| last_record.line_number != line_number);
+                
+            if should_add_record {
+                usage.operation_history.push(OperationRecord {
+                    line_number,
+                    operation: instruction_text.to_string(),
+                });
+            }
+        }
+    }
+    
+    fn get_register_from_operand(&self, operand: &tree_sitter::Node, content: &str, aliases: &HashMap<String, crate::DefinitionData<crate::AliasValue>>) -> String {
+        if let Some(operand_child) = operand.child(0) {
+            match operand_child.kind() {
+                "register" => operand_child.utf8_text(content.as_bytes()).unwrap_or("").to_string(),
+                "identifier" => {
+                    let identifier = operand_child.utf8_text(content.as_bytes()).unwrap_or("");
+                    if let Some(alias_data) = aliases.get(identifier) {
+                        if let crate::AliasValue::Register(reg_name) = &alias_data.value {
+                            reg_name.clone()
+                        } else {
+                            String::new()
+                        }
+                    } else {
+                        String::new()
+                    }
+                }
+                _ => String::new(),
+            }
+        } else {
+            String::new()
+        }
+    }
+    
+    
     pub fn get_register_usage(&self) -> &HashMap<String, RegisterUsage> {
         &self.register_usage
+    }
+    
+    pub fn get_register_info(&self, register_or_alias: &str) -> Option<&RegisterUsage> {
+        // Try direct register lookup first
+        if let Some(usage) = self.register_usage.get(register_or_alias) {
+            return Some(usage);
+        }
+        
+        // Try alias lookup
+        if let Some(register_name) = self.alias_to_register.get(register_or_alias) {
+            return self.register_usage.get(register_name);
+        }
+        
+        None
     }
 }

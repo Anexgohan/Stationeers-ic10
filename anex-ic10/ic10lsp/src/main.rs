@@ -1202,6 +1202,61 @@ impl LanguageServer for Backend {
                     }
                 }
                 if let Some(definition_data) = type_data.aliases.get(name) {
+                    // Check if this is a register alias and provide value tracking info
+                    if let AliasValue::Register(_) = &definition_data.value {
+                        // Perform register analysis to get current value information
+                        let mut register_analyzer = additional_features::RegisterAnalyzer::new();
+                        if let Some(tree) = document.tree.as_ref() {
+                            register_analyzer.analyze_register_usage(tree, &document.content, &type_data.aliases);
+                            
+                            if let Some(register_info) = register_analyzer.get_register_info(name) {
+                                let register_name = definition_data.value.to_string();
+                                let mut hover_content = vec![
+                                    MarkedString::LanguageString(LanguageString {
+                                        language: "ic10".to_string(),
+                                        value: format!("alias {} {}", name, definition_data.value),
+                                    })
+                                ];
+                                
+                                // Add register information with simple operation history
+                                let mut value_parts = vec![];
+                                
+                                value_parts.push(format!("**Register** {} ({})", name, register_name));
+                                
+                                // Add operation history if available
+                                if !register_info.operation_history.is_empty() {
+                                    value_parts.push("**Operation history:**".to_string());
+                                    let history_limit = 99; // Show up to 99 operations (tooltip is scrollable)
+                                    let start_idx = if register_info.operation_history.len() > history_limit {
+                                        register_info.operation_history.len() - history_limit
+                                    } else {
+                                        0
+                                    };
+                                    
+                                    for record in &register_info.operation_history[start_idx..] {
+                                        value_parts.push(format!("  • Line {}: {}", record.line_number, record.operation));
+                                    }
+                                    
+                                    if start_idx > 0 {
+                                        value_parts.push(format!("  • ... ({} earlier operations)", start_idx));
+                                    }
+                                } else {
+                                    value_parts.push("**Operation history:** No operations found".to_string());
+                                }
+                                
+                                let value_info = value_parts.join("\n\n");
+                                
+                                hover_content.push(MarkedString::String(value_info));
+                                
+                                return Ok(Some(Hover {
+                                    contents: HoverContents::Array(hover_content),
+                                    range: Some(Range::from(node.range()).into()),
+                                }));
+                            }
+                        }
+                    }
+                    
+                    // Fallback to basic alias information
                     return Ok(Some(Hover {
                         contents: HoverContents::Array(vec![MarkedString::LanguageString(
                             LanguageString {
@@ -1302,6 +1357,73 @@ impl LanguageServer for Backend {
                                 range: Some(Range::from(node.range()).into()),
                             }));
                         }
+                    }
+                }
+            }
+            "register" => {
+                // Handle direct register hover (e.g., hovering over "r0", "r1", etc.)
+                let mut register_analyzer = additional_features::RegisterAnalyzer::new();
+                if let Some(tree) = document.tree.as_ref() {
+                    register_analyzer.analyze_register_usage(tree, &document.content, &type_data.aliases);
+                    
+                    if let Some(register_info) = register_analyzer.get_register_info(name) {
+                        let mut hover_content = vec![];
+                        
+                        // Add register declaration info
+                        let register_display = if let Some(alias) = &register_info.alias_name {
+                            format!("alias {} {}", alias, name)
+                        } else {
+                            format!("register {}", name)
+                        };
+                        
+                        // For direct registers, don't show both the language string and the markdown header
+                        let mut value_parts = vec![];
+                        
+                        let display_name = register_info.alias_name.as_ref()
+                            .map(|alias| format!("{} ({})", alias, name))
+                            .unwrap_or_else(|| name.to_string());
+                            
+                        // Only show one header - either the alias info or the register info
+                        if register_info.alias_name.is_some() {
+                            hover_content.push(MarkedString::LanguageString(LanguageString {
+                                language: "ic10".to_string(),
+                                value: register_display,
+                            }));
+                            value_parts.push(format!("**Register** {}", display_name));
+                        } else {
+                            // For bare registers, just show the register info without duplicate
+                            value_parts.push(format!("**Register** {}", display_name));
+                        }
+                        
+                        // Add operation history if available
+                        if !register_info.operation_history.is_empty() {
+                            value_parts.push("**Operation history:**".to_string());
+                            let history_limit = 99; // Show up to 99 operations (tooltip is scrollable)
+                            let start_idx = if register_info.operation_history.len() > history_limit {
+                                register_info.operation_history.len() - history_limit
+                            } else {
+                                0
+                            };
+                            
+                            for record in &register_info.operation_history[start_idx..] {
+                                value_parts.push(format!("  • Line {}: {}", record.line_number, record.operation));
+                            }
+                            
+                            if start_idx > 0 {
+                                value_parts.push(format!("  • ... ({} earlier operations)", start_idx));
+                            }
+                        } else {
+                            value_parts.push("**Operation history:** No operations found".to_string());
+                        }
+                        
+                        let value_info = value_parts.join("\n\n");
+                        
+                        hover_content.push(MarkedString::String(value_info));
+                        
+                        return Ok(Some(Hover {
+                            contents: HoverContents::Array(hover_content),
+                            range: Some(Range::from(node.range()).into()),
+                        }));
                     }
                 }
             }

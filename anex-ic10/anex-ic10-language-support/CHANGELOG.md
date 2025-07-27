@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.0] - 2025-01-27
+
+### ✨ New Features
+- **Register Operation History** - Enhanced hover tooltips with comprehensive register tracking
+  - **Operation Timeline** - Shows chronological history of all operations performed on each register
+  - **Scrollable History** - Displays up to 99 operations in scrollable VS Code tooltips
+  - **Line Number Tracking** - Each operation shows the exact line where it occurred
+  - **Full Alias Integration** - Works seamlessly with aliased registers (`temp (r0)`)
+  - **Assignment Operation Coverage** - Tracks 40+ IC10 instructions that modify register values
+
+### 🔧 Improvements
+- **Simplified Architecture** - Removed complex value computation for better maintainability
+- **Enhanced Hover Provider** - Clean, readable tooltips with markdown formatting
+- **Scrollable Interface** - Takes advantage of VS Code's native tooltip scrolling capabilities
+- **Performance Optimization** - Lightweight operation tracking without heavy computation overhead
+
+### 🐛 Bug Fixes
+- **Tooltip Formatting** - Fixed cluttered single-line display with proper multi-line markdown structure
+- **Duplicate Detection** - Eliminated repeated entries in operation history
+- **Header Duplication** - Removed redundant register name display in hover tooltips
+
 ## [1.3.0] - 2025-07-26
 
 ### ✨ New Features
