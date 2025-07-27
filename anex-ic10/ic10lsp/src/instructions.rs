@@ -839,6 +839,7 @@ pub(crate) const BATCH_MODE_DOCS: phf::Map<&'static str, &'static str> = phf_map
     "Maximum" => "Highest of all read values",
 };
 
+
 include!(concat!(env!("OUT_DIR"), "/stationpedia.rs"));
 
 #[cfg(test)]

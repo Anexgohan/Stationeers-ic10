@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.5.0] - 2025-01-27
+
+### ✨ New Features
+- **Enhanced Hover Documentation** - Comprehensive instruction tooltips with examples and interactive features
+  - **Multi-Example Coverage** - 3+ examples per instruction with learning progression (simple → intermediate → advanced)
+  - **Simplified Register Examples** - Every instruction includes beginner-friendly examples using r0-r15 and d0-d5
+  - **Real-World Patterns** - Examples derived from actual IC10 automation scripts for authentic usage
+  - **Interactive Command Links** - Clickable links in hover tooltips for related instructions and categories
+  - **Comprehensive Categorization** - 8 instruction categories (Arithmetic, Device I/O, Batch Operations, etc.)
+  - **Related Instruction Discovery** - Quick access to similar commands through enhanced tooltips
+- **Interactive VS Code Commands** - Two new commands for instruction exploration
+  - **Show Related Instructions** - `ic10.showRelated` command displays related instructions in Quick Pick interface
+  - **Search by Category** - `ic10.searchCategory` command browses instructions by functional categories
+  - **Smart Insertion** - Both commands support cursor-based insertion of selected instructions
+
+### 🔧 Improvements
+- **tooltip_documentation.rs Module** - Dedicated Rust module with PHF maps for efficient documentation lookup
+  - **57 Instruction Examples** - Comprehensive coverage with authentic automation patterns
+  - **140+ Related Mappings** - Cross-reference system linking similar instructions
+  - **8 Category Classifications** - Organized instruction groupings for better discoverability
+- **Enhanced Hover Provider** - Complete overhaul of instruction hover functionality
+  - **Rich Markdown Content** - Syntax highlighting, examples, and interactive links
+  - **Performance Optimized** - Efficient PHF map lookups for instant tooltip generation
+- **VS Code Extension Integration** - Seamless command palette and Quick Pick integration
+- **Data Verification** - Examples validated against actual Stationeers game data and real IC10 scripts
+
+### 🐛 Bug Fixes
+- **Instruction Examples Accuracy** - Fixed critical command mixing issues in tooltip documentation
+  - **lb Command Examples** - Corrected examples that incorrectly used `lbn` commands
+  - **sb Command Examples** - Fixed examples that incorrectly used `sbn` commands
+  - **bgt Command Examples** - Fixed example that incorrectly showed `bgtz` command
+  - **Syntax Consistency** - All 57 instruction examples now properly demonstrate their respective commands
+
 ## [1.4.0] - 2025-01-27
 
 ### ✨ New Features

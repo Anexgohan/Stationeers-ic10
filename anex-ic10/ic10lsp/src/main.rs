@@ -41,6 +41,7 @@ mod debug_crc32;
 // mod test_hash_lookup; // Moved to dev/testing
 mod debug_tree_structure;
 mod additional_features;
+mod tooltip_documentation;
 
 const LINT_ABSOLUTE_JUMP: &'static str = "L001";
 const LINT_NUMBER_BATCH_MODE: &'static str = "L002";
@@ -1278,20 +1279,9 @@ impl LanguageServer for Backend {
                 }
             }
             "operation" | "invalid_instruction" => {
-                if let Some(signature) = instructions::INSTRUCTIONS.get(name) {
-                    let mut content = name.to_string();
-                    for parameter in signature.0 {
-                        content.push_str(&format!(" {parameter}"));
-                    }
+                if let Some(_signature) = instructions::INSTRUCTIONS.get(name) {
                     return Ok(Some(Hover {
-                        contents: HoverContents::Array({
-                            let mut v = Vec::new();
-                            v.push(MarkedString::String(content));
-                            if let Some(doc) = instructions::INSTRUCTION_DOCS.get(name) {
-                                v.push(MarkedString::String(doc.to_string()));
-                            }
-                            v
-                        }),
+                        contents: HoverContents::Array(tooltip_documentation::create_enhanced_instruction_hover(name)),
                         range: Some(Range::from(node.range()).into()),
                     }));
                 }

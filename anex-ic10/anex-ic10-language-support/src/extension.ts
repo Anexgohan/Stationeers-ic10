@@ -112,6 +112,128 @@ export function activate(context: vscode.ExtensionContext) {
         lc.sendRequest('workspace/executeCommand', options);
     }   ));
 
+    // Register ic10.showRelated command
+    context.subscriptions.push(vscode.commands.registerCommand('ic10.showRelated', async (instruction?: string) => {
+        // If instruction not provided, try to get current word at cursor
+        if (!instruction) {
+            const editor = vscode.window.activeTextEditor;
+            if (!editor) {
+                vscode.window.showInformationMessage('No active editor found');
+                return;
+            }
+            
+            const position = editor.selection.active;
+            const range = editor.document.getWordRangeAtPosition(position);
+            if (!range) {
+                vscode.window.showInformationMessage('No instruction found at cursor');
+                return;
+            }
+            
+            instruction = editor.document.getText(range);
+        }
+
+        // Map of instruction to related instructions (simplified version for demo)
+        const relatedInstructions: { [key: string]: string[] } = {
+            'add': ['sub', 'mul', 'div', 'mod'],
+            'sub': ['add', 'mul', 'div', 'mod'],
+            'mul': ['add', 'sub', 'div', 'mod'],
+            'div': ['add', 'sub', 'mul', 'mod'],
+            'l': ['s', 'lb', 'sb', 'lr', 'ls', 'ld', 'sd'],
+            's': ['l', 'lb', 'sb', 'lr', 'ls', 'ld', 'sd'],
+            'beq': ['bne', 'blt', 'bgt', 'ble', 'bge', 'breq', 'beqz'],
+            'bne': ['beq', 'blt', 'bgt', 'ble', 'bge', 'brne', 'bnez']
+        };
+
+        const related = relatedInstructions[instruction.toLowerCase()];
+        if (!related || related.length === 0) {
+            vscode.window.showInformationMessage(`No related instructions found for '${instruction}'`);
+            return;
+        }
+
+        const selectedInstruction = await vscode.window.showQuickPick(
+            related.map(instr => ({
+                label: instr,
+                description: `Related to ${instruction}`
+            })),
+            {
+                placeHolder: `Instructions related to ${instruction}`,
+                canPickMany: false
+            }
+        );
+
+        if (selectedInstruction) {
+            // Insert the selected instruction at cursor
+            const editor = vscode.window.activeTextEditor;
+            if (editor) {
+                const position = editor.selection.active;
+                editor.edit(editBuilder => {
+                    editBuilder.insert(position, selectedInstruction.label);
+                });
+            }
+        }
+    }));
+
+    // Register ic10.searchCategory command
+    context.subscriptions.push(vscode.commands.registerCommand('ic10.searchCategory', async (category?: string) => {
+        // Map of categories to instructions
+        const categories: { [key: string]: string[] } = {
+            'Arithmetic': ['add', 'sub', 'mul', 'div', 'mod', 'abs', 'sqrt'],
+            'Device I/O': ['l', 's', 'lr', 'ls', 'ld', 'sd', 'ss'],
+            'Batch Operations': ['lb', 'sb', 'lbn', 'lbs', 'sbn', 'sbs'],
+            'Branching': ['beq', 'bne', 'blt', 'bgt', 'ble', 'bge', 'beqz', 'bnez'],
+            'Control Flow': ['j', 'jr', 'jal'],
+            'Comparison': ['slt', 'sgt', 'sle', 'sge', 'seq', 'sne'],
+            'Logic': ['and', 'or', 'xor', 'nor']
+        };
+
+        if (!category) {
+            // Show category picker first
+            const selectedCategory = await vscode.window.showQuickPick(
+                Object.keys(categories).map(cat => ({
+                    label: cat,
+                    description: `${categories[cat].length} instructions`
+                })),
+                {
+                    placeHolder: 'Select instruction category',
+                    canPickMany: false
+                }
+            );
+
+            if (!selectedCategory) {
+                return;
+            }
+            category = selectedCategory.label;
+        }
+
+        const instructions = categories[category];
+        if (!instructions || instructions.length === 0) {
+            vscode.window.showInformationMessage(`No instructions found in category '${category}'`);
+            return;
+        }
+
+        const selectedInstruction = await vscode.window.showQuickPick(
+            instructions.map(instr => ({
+                label: instr,
+                description: `${category} instruction`
+            })),
+            {
+                placeHolder: `${category} instructions`,
+                canPickMany: false
+            }
+        );
+
+        if (selectedInstruction) {
+            // Insert the selected instruction at cursor
+            const editor = vscode.window.activeTextEditor;
+            if (editor) {
+                const position = editor.selection.active;
+                editor.edit(editBuilder => {
+                    editBuilder.insert(position, selectedInstruction.label);
+                });
+            }
+        }
+    }));
+
 }
 
 // This method is called when your extension is deactivated
