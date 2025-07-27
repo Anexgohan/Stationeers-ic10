@@ -90,7 +90,8 @@ jobs:
           CHANGELOG_PATH="anex-ic10/anex-ic10-language-support/CHANGELOG.md"
           
           # Get content between first ## [version] and next ## [version]
-          changelog_content=$(sed -n '/^## \[/,/^## \[/p' "$CHANGELOG_PATH" | head -n -1 | tail -n +2)
+          # Use awk to extract only the first version section
+          changelog_content=$(awk '/^## \[/{if(found) exit; found=1; next} found' "$CHANGELOG_PATH")
           
           # If the content is empty, fall back to commit message
           if [ -z "$changelog_content" ]; then
